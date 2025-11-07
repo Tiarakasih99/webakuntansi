@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('hello');
+    return view('compro.home');
 });
 
 Route::view('/jurnal', 'pages.transaksi.jurnal')->name('jurnal.index');
