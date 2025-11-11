@@ -15,6 +15,7 @@ Route::view('/laba-rugi', 'pages.laporan.labarugi')->name('laba_rugi.index');
 Route::view('/posisi-keuangan', 'pages.laporan.posisi_keuangan')->name('posisi_keuangan.index');
 Route::view('/perubahan-modal', 'pages.laporan.perubahan_modal')->name('perubahan_modal.index');
 
+
 use App\Http\Controllers\DashboardController;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
