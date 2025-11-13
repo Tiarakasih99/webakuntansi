@@ -1,0 +1,145 @@
+/* === GLOBAL === */
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #333;
+  line-height: 1.6;
+}
+.section {
+  padding: 80px 20px;
+  text-align: center;
+}
+h1, h2, h3 {
+  margin-bottom: 20px;
+}
+
+/* === HERO SECTION === */
+.hero {
+  background: url('https://images.unsplash.com/photo-1503424886308-418b744a73b0') center/cover no-repeat;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  position: relative;
+}
+.hero .overlay {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 50px;
+  border-radius: 10px;
+}
+.hero h1 {
+  font-size: 48px;
+}
+.hero p {
+  margin: 15px 0 25px;
+  font-size: 18px;
+}
+
+/* === ABOUT === */
+.about p {
+  max-width: 800px;
+  margin: 0 auto;
+  color: #666;
+}
+
+/* === SERVICES === */
+.services {
+  background-color: #F5E1E0;
+}
+.services .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 40px;
+}
+.services .card {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+.services .card:hover {
+  transform: translateY(-6px);
+}
+
+/* === PRICING === */
+.pricing .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+}
+.price-card {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.price-card.featured {
+  background: #4F46E5;
+  color: white;
+}
+.price {
+  font-size: 26px;
+  font-weight: bold;
+  margin: 15px 0;
+}
+
+/* === CONTACT === */
+.contact form {
+  max-width: 500px;
+  margin: 30px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.contact input, .contact textarea {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+}
+.contact textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+.contact button {
+  background: #4F46E5;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.contact button:hover {
+  background: #3F3AC9;
+}
+
+/* === BUTTONS === */
+.btn-primary {
+  background: #4F46E5;
+  color: white;
+  padding: 12px 25px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 500;
+  display: inline-block;
+}
+.btn-primary:hover {
+  background: #3F3AC9;
+}
+.btn-light {
+  background: white;
+  color: #4F46E5;
+  padding: 12px 25px;
+  border-radius: 6px;
+  text-decoration: none;
+  display: inline-block;
+}
+.btn-light:hover {
+  background: #EEE;
+}
