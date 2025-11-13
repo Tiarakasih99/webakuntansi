@@ -3,13 +3,16 @@
 @section('title', 'Home - Adésté & Co.')
 
 @section('content')
-  <section id="home" class="bg-cover bg-center h-screen flex flex-col justify-center items-center text-center text-white " style="background-color: #F5E1E0; margin : 0px;">
-    <div class="bg-black bg-opacity-50 p-10 rounded-lg" >
-      <h1 class="text-4xl md:text-6xl font-bold mb-4">We Create Unforgettable Events</h1>
-      <p class="text-lg md:text-xl mb-6">Profesional, kreatif, dan berpengalaman dalam mengatur acara Anda.</p>
-      <a href="#contact" class="bg-indigo-600 px-6 py-3 rounded-md text-white font-semibold hover:bg-indigo-700">Request Proposal</a>
-    </div>
-  </section>
+  <section id="home" 
+  class="flex flex-col justify-center items-center text-center text-white h-screen w-full m-0 p-0 relative overflow-hidden"
+  style="background: url('/images/bg-event.jpg') center/cover no-repeat;">
+  
+  <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+  
+  <div class="relative z-10 p-10 rounded-lg">
+  </div>
+</section>
+
 
   <section id="about" class="py-20 max-w-7xl mx-auto px-6 text-center" style="background-color: #F5E1E0;">
     <h2 class="text-3xl font-bold mb-6" style="color : #7F6169;">About Us</h2>

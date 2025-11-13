@@ -54,3 +54,16 @@
   </footer>
 </body>
 </html>
+
+<style>
+  #contact {
+    margin-bottom: 0 !important;
+    padding-bottom: 35px !important;
+  }
+
+  footer {
+    margin-top: 0px !important;
+    padding-top: 0 !important;
+  }
+</style>
+
