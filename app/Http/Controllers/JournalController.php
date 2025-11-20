@@ -36,47 +36,62 @@ class JournalController extends Controller
             'entries.*.credit' => 'nullable|numeric|min:0',
         ]);
 
-        $totalDebit = collect($request->entries)->sum('debit');
-        $totalCredit = collect($request->entries)->sum('credit');
+        $totalDebit = collect($request->entries)->sum(function ($e) {
+            return $e['debit'] ?? 0;
+        });
+        $totalCredit = collect($request->entries)->sum(function ($e) {
+            return $e['credit'] ?? 0;
+        });
 
         if ($totalDebit != $totalCredit) {
             return back()->withErrors('Total debit dan kredit harus sama!')->withInput();
         }
 
-        DB::transaction(function () use ($request, $totalDebit) {
-            $lastJournal = Journal::orderByDesc('id')->first();
-            $transactionNumber = $lastJournal ? $lastJournal->transaction_number + 1 : 1;
+        try {
+            DB::transaction(function () use ($request, $totalDebit) {
+                $lastJournal = Journal::orderByDesc('id')->first();
+                $transactionNumber = $lastJournal ? $lastJournal->transaction_number + 1 : 1;
 
-            $journal = Journal::create([
-                'transaction_number' => $transactionNumber,
-                'date' => $request->date,
-                'total' => $totalDebit,
-                'description' => $request->description ?? null,
-            ]);
-
-            foreach ($request->entries as $entry) {
-                $je = JournalEntry::create([
-                    'journal_id' => $journal->id,
-                    'account_id' => $entry['account_id'],
-                    'debit' => $entry['debit'] ?? 0,
-                    'credit' => $entry['credit'] ?? 0,
-                    'description' => $entry['description'] ?? null,
+                $journal = Journal::create([
+                    'transaction_number' => $transactionNumber,
+                    'date' => $request->date,
+                    'total' => $totalDebit,
+                    'description' => $request->description ?? null,
                 ]);
 
-                // Update atau buat ledger (saldo kumulatif)
-                $account = Account::findOrFail($entry['account_id']);
-                $lastBalance = Ledger::where('account_id', $account->id)->latest()->value('balance') ?? $account->balance;
+                foreach ($request->entries as $entry) {
+                    // Pastikan nilai debit/credit selalu numerik
+                    $debit = $entry['debit'] ?? 0;
+                    $credit = $entry['credit'] ?? 0;
 
-                Ledger::create([
-                    'account_id' => $account->id,
-                    'journal_entry_id' => $je->id,
-                    'date' => $journal->date,
-                    'debit' => $entry['debit'] ?? 0,
-                    'credit' => $entry['credit'] ?? 0,
-                    'balance' => $lastBalance + ($entry['debit'] ?? 0) - ($entry['credit'] ?? 0),
-                ]);
-            }
-        });
+                    $je = JournalEntry::create([
+                        'journal_id' => $journal->id,
+                        'account_id' => $entry['account_id'],
+                        'debit' => $debit,
+                        'credit' => $credit,
+                        'description' => $entry['description'] ?? null,
+                    ]);
+
+                    // Update atau buat ledger (saldo kumulatif)
+                    $account = Account::findOrFail($entry['account_id']);
+                    $lastBalance = Ledger::where('account_id', $account->id)
+                        ->latest('date')
+                        ->value('balance') ?? $account->balance ?? 0;
+
+                    Ledger::create([
+                        'account_id' => $account->id,
+                        'journal_entry_id' => $je->id,
+                        'date' => $journal->date,
+                        'debit' => $debit,
+                        'credit' => $credit,
+                        'balance' => $lastBalance + $debit - $credit,
+                    ]);
+                }
+            });
+        } catch (\Exception $e) {
+            // Menangkap error supaya bisa langsung kelihatan
+            return back()->withErrors('Terjadi kesalahan saat menyimpan jurnal: ' . $e->getMessage())->withInput();
+        }
 
         return redirect()->route('journals.index')->with('success', 'Jurnal berhasil disimpan.');
     }

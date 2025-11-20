@@ -4,7 +4,7 @@
 
 @section('content')
 <h1>Akun Perkiraan</h1>
-<a href="{{ route('accounts.create') }}" class="btn btn-primary mb-3">Tambah Akun</a>
+<a href="{{ route('accounts.create') }}" class="btn btn-primary mb-4">Tambah Akun</a>
 <table class="table table-striped">
     <thead>
         <tr>

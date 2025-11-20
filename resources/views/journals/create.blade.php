@@ -25,15 +25,13 @@
                 <th>Aksi</th>
             </tr>
         </thead>
-        <tbody>
-            <!-- Baris rincian jurnal akan muncul di sini -->
-        </tbody>
+        <tbody></tbody>
     </table>
 
     <button type="submit" class="btn btn-success">Simpan Jurnal</button>
 </form>
 
-<!-- Modal Untuk Input Entri -->
+<!-- Modal Entri -->
 <div class="modal fade" id="entryModal" tabindex="-1" aria-labelledby="entryModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -75,6 +73,7 @@
                         <textarea id="descInput" class="form-control" rows="2"></textarea>
                     </div>
 
+                    <input type="hidden" id="entryMode" value="main">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -84,21 +83,36 @@
         </div>
     </div>
 </div>
-
 @endsection
 
 @section('scripts')
 <script>
-$(document).ready(function(){  // Pastikan jQuery siap
-    // Tambah entri ke tabel rincian
+$(document).ready(function(){
+    let firstEntryAmount = 0;
+    let firstEntryType = '';
+    let rowIndex = 0;
+
+    function addRow(accountId, accountText, debit, credit, desc){
+        let row = `<tr>
+            <td>${accountText}<input type="hidden" name="entries[${rowIndex}][account_id]" value="${accountId}"></td>
+            <td>${debit.toFixed(2)}<input type="hidden" name="entries[${rowIndex}][debit]" value="${debit.toFixed(2)}"></td>
+            <td>${credit.toFixed(2)}<input type="hidden" name="entries[${rowIndex}][credit]" value="${credit.toFixed(2)}"></td>
+            <td>${desc}<input type="hidden" name="entries[${rowIndex}][description]" value="${desc}"></td>
+            <td><button type="button" class="btn btn-danger btn-sm removeRowBtn">Hapus</button></td>
+        </tr>`;
+        $('#entriesTable tbody').append(row);
+        rowIndex++;
+    }
+
     $('#addEntryBtn').click(function(){
         let accountId = $('#accountSelect').val();
         let accountText = $('#accountSelect option:selected').text();
         let type = $('input[name="type"]:checked').val();
         let amount = parseFloat($('#amountInput').val());
         let desc = $('#descInput').val().trim();
+        let mode = $('#entryMode').val();
 
-        if(!accountId || !type || isNaN(amount) || amount <= 0) {
+        if(!accountId || !type || isNaN(amount) || amount <= 0){
             alert('Lengkapi data dengan benar!');
             return;
         }
@@ -106,27 +120,47 @@ $(document).ready(function(){  // Pastikan jQuery siap
         let debit = (type === 'debit') ? amount : 0;
         let credit = (type === 'credit') ? amount : 0;
 
-        let row = `<tr>
-            <td>${accountText}<input type="hidden" name="entries[][account_id]" value="${accountId}"></td>
-            <td>${debit.toFixed(2)}<input type="hidden" name="entries[][debit]" value="${debit.toFixed(2)}"></td>
-            <td>${credit.toFixed(2)}<input type="hidden" name="entries[][credit]" value="${credit.toFixed(2)}"></td>
-            <td>${desc}<input type="hidden" name="entries[][description]" value="${desc}"></td>
-            <td><button type="button" class="btn btn-danger btn-sm removeRowBtn">Hapus</button></td>
-        </tr>`;
+        if(mode === 'main'){
+            firstEntryAmount = amount;
+            firstEntryType = type;
+            addRow(accountId, accountText, debit, credit, desc);
+        } else if(mode === 'contra'){
+            let contraDebit = (firstEntryType === 'debit') ? 0 : firstEntryAmount;
+            let contraCredit = (firstEntryType === 'credit') ? 0 : firstEntryAmount;
+            addRow(accountId, accountText, contraDebit, contraCredit, 'Kontra: ' + desc);
+        }
 
-        $('#entriesTable tbody').append(row);
-
-        // Tutup modal dan reset form
-        $('#entryModal').modal('hide');
         $('#entryForm')[0].reset();
+        $('#entryModal').modal('hide');
+        $('#entryMode').val('main'); 
     });
 
-    // Hapus baris entri
+    $('#entryModal').on('show.bs.modal', function () {
+        if($('#entriesTable tbody tr').length === 0){
+            $('#entryMode').val('main');
+            $('#entryModalLabel').text('Tambah Entri Jurnal');
+            $('#amountInput').val('').prop('readonly', false);
+            $('input[name="type"]').prop('checked', false);
+            $('#descInput').val('');
+        } else {
+            $('#entryMode').val('contra');
+            $('#entryModalLabel').text('Tambah Entri Kontra');
+            $('#amountInput').val(firstEntryAmount.toFixed(2)).prop('readonly', false);
+            if(firstEntryType === 'debit') $('#creditRadio').prop('checked', true);
+            else if(firstEntryType === 'credit') $('#debitRadio').prop('checked', true);
+            $('#descInput').val('');
+        }
+    });
+
     $(document).on('click', '.removeRowBtn', function(){
         $(this).closest('tr').remove();
+        if($('#entriesTable tbody tr').length === 0){
+            firstEntryAmount = 0;
+            firstEntryType = '';
+            rowIndex = 0;
+        }
     });
 
-    // Validasi sebelum submit: cek debit = kredit
     $('#journalForm').submit(function(e){
         let totalDebit = 0;
         let totalCredit = 0;
@@ -135,12 +169,15 @@ $(document).ready(function(){  // Pastikan jQuery siap
             totalCredit += parseFloat($(this).find('input[name$="[credit]"]').val()) || 0;
         });
 
-        if(Math.abs(totalDebit - totalCredit) > 0.01){  // Toleransi kecil untuk floating point
-            e.preventDefault();
-            alert('Total debit dan kredit harus sama!');
-        } else if ($('#entriesTable tbody tr').length === 0) {
+        if($('#entriesTable tbody tr').length === 0){
             e.preventDefault();
             alert('Harap tambahkan minimal satu entri jurnal!');
+            return;
+        }
+
+        if(Math.abs(totalDebit - totalCredit) > 0.01){
+            e.preventDefault();
+            alert('Total debit dan kredit harus sama!');
         }
     });
 });
