@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\JournalController;
+use App\Http\Controllers\LedgerController;
+use App\Http\Controllers\ReportController;
 
 Route::get('/', function () {
     return view('compro.home');
@@ -25,3 +29,37 @@ use App\Http\Controllers\LabaRugiController;
 
 Route::get('/laporan/laba-rugi', [LabaRugiController::class, 'index'])->name('laporan.labarugi.index');
 Route::post('/laporan/laba-rugi/generate', [LabaRugiController::class, 'generate'])->name('laporan.labarugi.generate');
+
+
+
+// Route::resource('accounts', AccountController::class);
+// Route::resource('journals', JournalController::class);
+// Route::resource('ledgers', LedgerController::class);
+// Route::get('trial-balance', [ReportController::class, 'trialBalance'])->name('trial-balance.index');
+// Route::get('financial-reports', [ReportController::class, 'index'])->name('financial-reports.index');
+// Route::post('financial-reports/generate', [ReportController::class, 'generate'])->name('financial-reports.generate');
+
+
+// Halaman utama, bisa redirect ke jurnal misalnya
+Route::get('/', function () {
+    return redirect()->route('journals.index');
+});
+
+// Resource routes untuk Akun Perkiraan (CRUD lengkap)
+Route::resource('accounts', AccountController::class);
+
+// Resource routes untuk Jurnal Umum (CRUD lengkap)
+Route::resource('journals', JournalController::class);
+
+// Route khusus untuk Jurnal Penyesuaian (penyesuaian bisa tampil mirip jurnal tapi filter)
+Route::get('journals/adjustment', [JournalController::class, 'adjustment'])->name('journals.adjustment');
+
+// Resource routes untuk Buku Besar (biasanya hanya index untuk lihat laporan)
+Route::resource('ledgers', LedgerController::class)->only(['index']);
+
+// Route untuk Neraca Saldo
+Route::get('trial-balance', [ReportController::class, 'trialBalance'])->name('trial-balance.index');
+
+// Route untuk Laporan Keuangan (form dan generate laporan)
+Route::get('financial-reports', [ReportController::class, 'index'])->name('financial-reports.index');
+Route::post('financial-reports/generate', [ReportController::class, 'generate'])->name('financial-reports.generate');

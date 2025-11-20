@@ -1,3 +1,5 @@
-<footer class="bg-white border-top text-center py-3 mt-auto text-muted small">
-    © {{ date('Y') }} Web Akuntansi — Universitas Internasional Batam
+<footer class="bg-light text-center py-3 mt-auto border-top">
+    <div class="container">
+        <small>&copy; {{ date('Y') }} Web Akuntansi. All rights reserved.</small>
+    </div>
 </footer>

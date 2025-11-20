@@ -4,66 +4,192 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>@yield('title', 'Company Profile | Event Organizer')</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: #333;
+      background-color: #fff;
+    }
+
+    /* === NAVBAR === */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: #7F6169;
+      padding: 15px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+
+    nav .logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fffdfc;
+      text-decoration: none;
+    }
+
+    nav .menu a {
+      color: #fffdfc;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    nav .menu a:hover {
+      color: #F5E1E0;
+    }
+
+    nav .login-btn {
+      background-color: #F5E1E0;
+      color: #7F6169;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    nav .login-btn:hover {
+      background-color: #fff;
+    }
+
+    /* === HERO SECTION === */
+    .hero {
+      background: url('{{ asset('img/herosection.png') }}') no-repeat center center;
+      background-size: cover;
+      height: 100vh;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      margin-top: 65px;
+      margin: 70px;
+      margin-bottom: 70 px;
+    }
+
+    /* === ABOUT SECTION (contoh lanjut ke konten bawah) === */
+    #about {
+      padding: 100px 80px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    #about h2 {
+      font-size: 2.2rem;
+      color: #7F6169;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #about p {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      text-align: center;
+      color: #444;
+    }
+
+    /* === FOOTER === */
+    footer {
+      background-color: #111;
+      color: #ccc;
+      padding: 50px 80px 20px;
+    }
+
+    footer .footer-container {
+      max-width: 1200px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+    }
+
+    footer h3 {
+      color: #fff;
+      margin-bottom: 15px;
+    }
+
+    footer a {
+      color: #ccc;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      color: #fff;
+    }
+
+    footer .bottom {
+      text-align: center;
+      margin-top: 30px;
+      background-color: #222;
+      padding: 15px;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
-<body class="font-sans antialiased bg-white text-gray-800">
- 
-  <nav class="bg-white shadow-md fixed w-full z-10">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center" style="background-color : #7F6169">
-      <a href="/" class="text-2xl font-bold text-indigo-600" style="color : #fffdfcff;">Adésté & Co.</a>
-      <div class="space-x-6 hidden md:flex" style="color : #fffdfcff">
-        <a href="#home" class="hover:text-indigo-600">Home</a>
-        <a href="#about" class="hover:text-indigo-600">About</a>
-        <a href="#services" class="hover:text-indigo-600">Services</a>
-        <a href="#pricing" class="hover:text-indigo-600">Pricing</a>
-        <a href="#contact" class="hover:text-indigo-600">Contact</a>
-      </div>
-      <a href="/admin/login" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700" style="background-color: #F5E1E0; color : #7F6169;">Admin Login</a>
+<body>
+  <!-- NAVBAR -->
+  <nav>
+    <a href="/" class="logo">Adésté & Co.</a>
+    <div class="menu">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#services">Services</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#contact">Contact</a>
     </div>
+    <a href="/admin/login" class="login-btn">Admin Login</a>
   </nav>
 
-  <main class="pt-04">
-    @yield('content')
-  </main>
+  <!-- HERO SECTION -->
+  <section class="hero" id="home">
+    {{-- kalau mau nambah tulisan hero nanti bisa di sini --}}
+  </section>
 
-  <footer class="bg-gray-900 text-gray-200 mt-16">
-    <div class="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-3 gap-8">
+  <!-- ABOUT SECTION -->
+  <section id="about">
+    <h2>About Us</h2>
+    <p>Adésté & Co. adalah event organizer profesional yang berfokus pada menciptakan momen berkesan
+      dengan sentuhan elegan dan detail yang sempurna. Kami berkomitmen untuk menghadirkan pengalaman
+      yang tak terlupakan bagi setiap klien kami.</p>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-container">
       <div>
-        <h3 class="font-bold text-lg mb-3">désté & Co.</h3>
+        <h3>Adésté & Co.</h3>
         <p>Kami membantu Anda mewujudkan acara yang berkesan dan profesional.</p>
       </div>
       <div>
-        <h3 class="font-bold text-lg mb-3">Quick Links</h3>
-        <ul>
-          <li><a href="#home" class="hover:text-white">Home</a></li>
-          <li><a href="#services" class="hover:text-white">Services</a></li>
-          <li><a href="#pricing" class="hover:text-white">Pricing</a></li>
-          <li><a href="#contact" class="hover:text-white">Contact</a></li>
-        </ul>
+        <h3>Quick Links</h3>
+        <a href="#home">Home</a><br>
+        <a href="#services">Services</a><br>
+        <a href="#pricing">Pricing</a><br>
+        <a href="#contact">Contact</a>
       </div>
       <div>
-        <h3 class="font-bold text-lg mb-3">Contact</h3>
+        <h3>Contact</h3>
         <p>📍 Batam, Indonesia</p>
         <p>📞 +62 812 3456 7890</p>
         <p>📧 info@auraeo.com</p>
       </div>
     </div>
-    <div class="bg-gray-800 text-center py-4 text-sm">
+    <div class="bottom">
       © 2025 Aura Event Organizer. All Rights Reserved.
     </div>
   </footer>
 </body>
 </html>
-
-<style>
-  #contact {
-    margin-bottom: 0 !important;
-    padding-bottom: 35px !important;
-  }
-
-  footer {
-    margin-top: 0px !important;
-    padding-top: 0 !important;
-  }
-</style>
-
