@@ -14,4 +14,9 @@ class Account extends Model
     {
         return $this->hasMany(JournalEntry::class);
     }
+
+    public function ledger()
+    {
+        return $this->hasMany(Ledger::class);
+    }
 }

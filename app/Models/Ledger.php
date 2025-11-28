@@ -20,3 +20,5 @@ class Ledger extends Model
         return $this->belongsTo(JournalEntry::class);
     }
 }
+
+

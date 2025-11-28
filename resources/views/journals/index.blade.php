@@ -19,13 +19,18 @@
     <tbody>
         @forelse($journals as $journal)
         <tr>
-            <td>{{ $loop->iteration }}</td>
+            <td>{{ $loop->iteration + ($journals->currentPage() - 1) * $journals->perPage() }}</td> <!-- Perbaiki nomor urut untuk pagination -->
             <td>{{ $journal->transaction_number }}</td>
             <td>{{ $journal->date }}</td>
-            <td>{{ number_format($journal->total, 2) }}</td>
+            <td>{{ number_format($journal->total, 2, ',', '.') }}</td> <!-- Format Indonesia untuk total -->
             <td>
                 <a href="{{ route('journals.show', $journal) }}" class="btn btn-info btn-sm">Detail</a>
-                <!-- Jika perlu edit / delete bisa ditambah -->
+                <a href="{{ route('journals.edit', $journal) }}" class="btn btn-warning btn-sm">Edit</a>
+                <form action="{{ route('journals.destroy', $journal) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus jurnal ini?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
             </td>
         </tr>
         @empty
@@ -35,4 +40,9 @@
         @endforelse
     </tbody>
 </table>
+
+<div class="d-flex justify-content-center mt-5">
+    {{ $journals->links() }}
+</div>
+
 @endsection

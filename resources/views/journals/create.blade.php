@@ -46,7 +46,7 @@
                         <select id="accountSelect" class="form-select" required>
                             <option value="">-- Pilih Akun --</option>
                             @foreach($accounts as $account)
-                                <option value="{{ $account->id }}">{{ $account->code }} - {{ $account->name }}</option>
+                                <option value="{{ $account->id }}" data-type="{{ $account->type }}">{{ $account->code }} - {{ $account->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -103,6 +103,24 @@ $(document).ready(function(){
         $('#entriesTable tbody').append(row);
         rowIndex++;
     }
+
+    // Event listener untuk otomatis set radio button berdasarkan tipe akun
+    $('#accountSelect').change(function(){
+        if ($('#entryMode').val() === 'contra') return; // Skip jika mode contra
+        let selectedOption = $(this).find('option:selected');
+        let accountType = selectedOption.data('type'); // Ambil tipe dari data-type
+
+        // Reset radio button dulu
+        $('input[name="type"]').prop('checked', false);
+
+        // Set otomatis berdasarkan tipe
+        if (accountType === 'asset' || accountType === 'expense') {
+            $('#debitRadio').prop('checked', true); // Otomatis Debit
+        } else if (accountType === 'liability' || accountType === 'equity' || accountType === 'revenue') {
+            $('#creditRadio').prop('checked', true); // Otomatis Credit
+        }
+        // Jika tipe tidak dikenali, biarkan kosong (user pilih manual)
+    });
 
     $('#addEntryBtn').click(function(){
         let accountId = $('#accountSelect').val();

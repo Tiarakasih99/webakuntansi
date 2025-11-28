@@ -5,6 +5,12 @@
     </div>
 
     <ul class="sidebar-menu">
+
+        <li>
+            <a href="{{ route('dashboard') }}">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+        </li>
         <li>
             <a href="{{ route('accounts.index') }}">
                 <i class="bi bi-wallet2"></i> Akun Perkiraan

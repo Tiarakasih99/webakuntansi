@@ -4,7 +4,7 @@
 
 @section('content')
 <h1>Neraca Saldo</h1>
-<table class="table table-striped ">
+<table class="table table-striped">
     <thead>
         <tr>
             <th>Akun</th>
@@ -20,6 +20,12 @@
             <td>{{ number_format($row['credit'], 2) }}</td>
         </tr>
         @endforeach
+        <!-- Baris Total -->
+        <tr class="font-weight-bold">
+            <td>Total</td>
+            <td>{{ number_format($totalDebit, 2) }}</td>
+            <td>{{ number_format($totalCredit, 2) }}</td>
+        </tr>
     </tbody>
 </table>
 @endsection
