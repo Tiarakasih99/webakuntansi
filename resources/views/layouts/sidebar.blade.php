@@ -32,7 +32,7 @@
             </a>
         </li>
         <li>
-            <a href="{{ route('trial-balance.index') }}">
+            <a href="{{ route('trial.balance') }}">
                 <i class="bi bi-calculator"></i> Neraca Saldo
             </a>
         </li>
@@ -45,12 +45,16 @@
 </div>
 <style>
 #sidebar {
+    position: fixed;
+    top: 70px;               /* turun sejajar navbar */
+    left: 0;
     width: 260px;
-    min-height: 100vh;
+    height: calc(100vh - 70px); /* tinggi dikurangi navbar */
     background: linear-gradient(180deg, #476797ff, #084298);
     color: white;
-    padding: 0;
+    overflow-y: auto;        /* bisa scroll kalau panjang */
 }
+
 
 .sidebar-header {
     text-align: center;

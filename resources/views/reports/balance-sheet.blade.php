@@ -13,6 +13,7 @@
     }
 
     .report-title {
+        color: #b30000;
         text-align: center;
         font-size: 24px;
         font-weight: bold;
@@ -53,10 +54,18 @@
 </style>
 
 <div class="report-container">
+
+    <form action="{{ route('reports.exportPdf') }}" method="POST" class="text-end mb-3">
+        @csrf
+        <input type="hidden" name="category_id" value="balance_sheet">
+        <input type="hidden" name="period_start" value="{{ $start }}">
+        <input type="hidden" name="period_end" value="{{ $end }}">
+        <button class="btn btn-danger">Export PDF</button>
+    </form>
+
+    <div class="report-title">Adésté & Co.</div>
     <div class="report-title">LAPORAN POSISI KEUANGAN</div>
-    <div class="report-subtitle">
-        Per {{ $end }}
-    </div>
+    <div class="report-subtitle">Per {{ $end }}</div>
 
     <table class="report-table">
         <tr>
@@ -64,42 +73,57 @@
             <th class="text-end">Jumlah (Rp)</th>
         </tr>
 
-        {{-- ASET --}}
         <tr>
-            <td><strong>Aset</strong></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td class="indent">Total Aset</td>
-            <td class="text-end">{{ number_format($totalAssets, 2, ',', '.') }}</td>
+            <td><strong>Aset</strong></td><td></td>
         </tr>
 
-        {{-- LIABILITY --}}
+        @foreach ($assetDetails as $a)
         <tr>
-            <td><strong>Kewajiban (Liabilities)</strong></td>
-            <td></td>
+            <td class="indent">{{ $a['name'] }}</td>
+            <td class="text-end">{{ number_format($a['balance'], 2, ',', '.') }}</td>
         </tr>
+        @endforeach
+
         <tr>
-            <td class="indent">Total Liabilitas</td>
-            <td class="text-end">{{ number_format($totalLiabilities, 2, ',', '.') }}</td>
+            <td class="total">Total Aset</td>
+            <td class="total text-end">{{ number_format($totalAssets, 2, ',', '.') }}</td>
         </tr>
 
-        {{-- EQUITY --}}
+        <tr><td><strong>Kewajiban</strong></td><td></td></tr>
+
+        @foreach ($liabilityDetails as $l)
         <tr>
-            <td><strong>Ekuitas</strong></td>
-            <td></td>
+            <td class="indent">{{ $l['name'] }}</td>
+            <td class="text-end">{{ number_format($l['balance'], 2, ',', '.') }}</td>
         </tr>
+        @endforeach
+
         <tr>
-            <td class="indent">Total Ekuitas</td>
-            <td class="text-end">{{ number_format($totalEquities, 2, ',', '.') }}</td>
+            <td class="total">Total Liabilitas</td>
+            <td class="total text-end">{{ number_format($totalLiabilities, 2, ',', '.') }}</td>
         </tr>
 
-        {{-- TOTAL CHECK --}}
+        <tr><td><strong>Ekuitas</strong></td><td></td></tr>
+
+        @foreach ($equityDetails as $e)
+        <tr>
+            <td class="indent">{{ $e['name'] }}</td>
+            <td class="text-end">{{ number_format($e['balance'], 2, ',', '.') }}</td>
+        </tr>
+        @endforeach
+
+        <tr>
+            <td class="total">Total Ekuitas</td>
+            <td class="total text-end">{{ number_format($totalEquities, 2, ',', '.') }}</td>
+        </tr>
+
         <tr>
             <td class="total"><strong>Total Liabilitas + Ekuitas</strong></td>
             <td class="total text-end">{{ number_format($totalLiabilities + $totalEquities, 2, ',', '.') }}</td>
         </tr>
+
     </table>
+
 </div>
 
 @endsection

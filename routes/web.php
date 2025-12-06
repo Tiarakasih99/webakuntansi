@@ -5,10 +5,11 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\JournalController;
 use App\Http\Controllers\LedgerController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\TrialBalanceController;
 
-Route::get('/', function () {
-    return view('compro.home');
-});
+// Route::get('/', function () {
+//     return view('compro.home');
+// });
 
 Route::view('/jurnal', 'pages.transaksi.jurnal')->name('jurnal.index');
 Route::view('/buku-besar', 'pages.transaksi.buku_besar')->name('buku_besar.index');
@@ -63,8 +64,40 @@ Route::get('journals/adjustment', [JournalController::class, 'adjustment'])->nam
 Route::resource('ledgers', LedgerController::class)->only(['index']);
 
 // Route untuk Neraca Saldo
-Route::get('trial-balance', [ReportController::class, 'trialBalance'])->name('trial-balance.index');
+// Route::get('trial-balance', [ReportController::class, 'trialBalance'])->name('trial-balance.index');
 
-// Route untuk Laporan Keuangan (form dan generate laporan)
-Route::get('financial-reports', [ReportController::class, 'index'])->name('financial-reports.index');
-Route::post('financial-reports/generate', [ReportController::class, 'generate'])->name('financial-reports.generate');
+Route::get('trial-balance', [TrialBalanceController::class, 'index'])->name('trial.balance');
+
+
+// // Route untuk Laporan Keuangan (form dan generate laporan)
+// Route::get('financial-reports', [ReportController::class, 'index'])->name('financial-reports.index');
+// Route::post('financial-reports/generate', [ReportController::class, 'generate'])->name('financial-reports.generate');
+// Route::post('/reports/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.exportPdf');
+// Route::post('/reports/generate', [ReportController::class, 'generate'])->name('reports.generate');
+// Route::post('/reports/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.exportPdf');
+     
+
+// Route::get('financial-reports', [ReportController::class, 'index'])->name('financial-reports.index');
+
+// Route::post('financial-reports/generate', [ReportController::class, 'generate'])
+//     ->name('financial-reports.generate');
+
+// Route::post('reports/export-pdf', [ReportController::class, 'exportPdf'])
+//     ->name('reports.exportPdf');
+
+
+
+Route::get('financial-reports', [ReportController::class, 'index'])
+    ->name('financial-reports.index');
+
+Route::post('financial-reports/generate', [ReportController::class, 'generate'])
+    ->name('financial-reports.generate');
+
+
+Route::post('reports/export-pdf', [ReportController::class, 'exportPdf'])
+    ->name('reports.exportPdf');
+
+Route::post('/reports/export-income', [ReportController::class, 'exportIncomePdf'])
+    ->name('reports.exportIncomePdf');
+Route::post('/reports/export-equity', [ReportController::class, 'exportEquityPdf'])
+    ->name('reports.exportEquityPdf');

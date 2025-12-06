@@ -10,7 +10,7 @@
         <tr>
             <th>Kode</th>
             <th>Nama</th>
-            <th>Tipe</th>
+            <!-- <th>Tipe</th> -->
             <th>Saldo</th>
             <th>Aksi</th>
         </tr>
@@ -20,11 +20,11 @@
         <tr>
             <td>{{ $account->code }}</td>
             <td>{{ $account->name }}</td>
-            <td>{{ $account->type }}</td>
+            <!-- <td>{{ $account->type }}</td> -->
             <td>{{ number_format($account->balance, 2) }}</td>
             <td>
-                <a href="{{ route('accounts.edit', $account) }}" class="btn btn-warning btn-sm">Edit</a>
-                <form action="{{ route('accounts.destroy', $account) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus akun?')">
+                <a href="{{ route('accounts.edit', $account ->id ) }}" class="btn btn-warning btn-sm">Edit</a>
+                <form action="{{ route('accounts.destroy', $account ->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus akun?')">
                     @csrf
                     @method('DELETE')
                     <button class="btn btn-danger btn-sm">Hapus</button>

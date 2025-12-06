@@ -4,161 +4,309 @@ namespace App\Http\Controllers;
 
 use App\Models\Account;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportController extends Controller
 {
-    // Halaman form laporan keuangan
     public function index()
     {
         return view('reports.index');
     }
 
-    // Generate laporan berdasarkan input form
     public function generate(Request $request)
     {
-        $request->validate([
-            'type' => 'required|in:balance_sheet,income_statement,changes_in_equity',
-            'period_start' => 'required|date',
-            'period_end' => 'required|date|after_or_equal:period_start',
-        ]);
-
+        $category = $request->category_id;
         $start = $request->period_start;
-        $end = $request->period_end;
-        $type = $request->type;
+        $end   = $request->period_end;
 
-        if ($type == 'balance_sheet') {
-            return $this->balanceSheet($start, $end);
-        } elseif ($type == 'income_statement') {
-            return $this->incomeStatement($start, $end);
-        } elseif ($type == 'changes_in_equity') {
-            return $this->changesInEquity($start, $end);
+        if ($category === 'balance_sheet') {
+            return $this->showBalanceSheet($start, $end);
+        } 
+        elseif ($category === 'income_statement') {
+            return $this->showIncomeStatement($start, $end);
         }
+        elseif ($category === 'changes_in_equity') {
+            return $this->showChangesInEquity($start, $end);
+        }
+
+        return redirect()->back()->with('error', 'Tipe laporan tidak valid');
     }
 
-    // Laporan Posisi Keuangan (Balance Sheet)
-    private function balanceSheet($start, $end)
+
+    // ===============================
+    // BALANCE SHEET (VIEW)
+    // ===============================
+    public function showBalanceSheet($start, $end)
     {
-        // Hitung saldo akhir untuk aset, liability, equity hingga akhir periode
-        $assets = Account::where('type', 'asset')->get();
-        $liabilities = Account::where('type', 'liability')->get();
-        $equities = Account::where('type', 'equity')->get();
+        $data = $this->balanceSheetData($start, $end);
+        return view('reports.balance-sheet', $data);
+    }
 
+    // BALANCE SHEET — DATA ONLY
+    private function balanceSheetData($start, $end)
+    {
+        // 1. Ambil modal akhir dari laporan perubahan modal
+        $equityChange = $this->changesInEquityData($start, $end);
+        $modalAkhir   = $equityChange['modalAkhir'];
+
+        // 2. Ambil akun-akun sesuai kategori
+        $assets = Account::whereHas('category', fn($q) => $q->where('name', 'asset'))->get();
+        $liabilities = Account::whereHas('category', fn($q) => $q->where('name', 'liability'))->get();
+        $equities = Account::whereHas('category', fn($q) => $q->where('name', 'equity'))->get();
+
+        // ---- Assets ----
+        $assetDetails = [];
         $totalAssets = 0;
-        $totalLiabilities = 0;
-        $totalEquities = 0;
-
-        foreach ($assets as $account) {
-            $balance = $this->getAccountBalance($account, $end);
+        foreach ($assets as $acc) {
+            $balance = $this->calculateAccountBalance($acc, $end);
+            $assetDetails[] = ['name' => $acc->name, 'balance' => $balance];
             $totalAssets += $balance;
         }
 
-        foreach ($liabilities as $account) {
-            $balance = $this->getAccountBalance($account, $end);
+        // ---- Liabilities ----
+        $liabilityDetails = [];
+        $totalLiabilities = 0;
+        foreach ($liabilities as $acc) {
+            $balance = $this->calculateAccountBalance($acc, $end);
+            $liabilityDetails[] = ['name' => $acc->name, 'balance' => $balance];
             $totalLiabilities += $balance;
         }
 
-        foreach ($equities as $account) {
-            $balance = $this->getAccountBalance($account, $end);
+        // ---- Equities ----
+        $equityDetails = [];
+        $totalEquities = 0;
+        foreach ($equities as $acc) {
+            $balance = $this->calculateAccountBalance($acc, $end);
+            $equityDetails[] = ['name' => $acc->name, 'balance' => $balance];
             $totalEquities += $balance;
         }
 
-        return view('reports.balance-sheet', compact('assets', 'liabilities', 'equities', 'totalAssets', 'totalLiabilities', 'totalEquities', 'start', 'end'));
+        // ---- Inject Modal Akhir ----
+        $equityDetails[] = ['name' => 'Modal Akhir', 'balance' => $modalAkhir];
+        $totalEquities = $modalAkhir;
+
+        return [
+            'start'             => $start,
+            'end'               => $end,
+            'assetDetails'      => $assetDetails,
+            'liabilityDetails'  => $liabilityDetails,
+            'equityDetails'     => $equityDetails,
+            'totalAssets'       => $totalAssets,
+            'totalLiabilities'  => $totalLiabilities,
+            'totalEquities'     => $totalEquities,
+        ];
     }
 
-    // Laporan Laba Rugi (Income Statement)
-    private function incomeStatement($start, $end)
+
+    // ===============================
+    // EXPORT PDF
+    // ===============================
+    public function exportPdf(Request $request)
     {
-        // Hitung total revenue dan expense dalam periode
-        $revenues = Account::where('type', 'revenue')->get();
-        $expenses = Account::where('type', 'expense')->get();
+        $category = $request->category_id;
+        $start = $request->period_start;
+        $end   = $request->period_end;
 
-        $totalRevenue = 0;
-        $totalExpense = 0;
-
-        foreach ($revenues as $account) {
-            $totalRevenue += $this->getAccountMovement($account, $start, $end, 'credit'); // Revenue biasanya credit
+        if ($category === 'balance_sheet') {
+            $data = $this->balanceSheetData($start, $end);
+            $pdf = Pdf::loadView('reports.pdf.balance-sheet-pdf', $data);
+        } else {
+            return redirect()->back()->with('error', 'Tipe laporan tidak valid');
         }
 
-        foreach ($expenses as $account) {
-            $totalExpense += $this->getAccountMovement($account, $start, $end, 'debit'); // Expense biasanya debit
+        return $pdf->download("laporan-{$category}-{$start}-{$end}.pdf");
+    }
+
+
+    public function showIncomeStatement($start, $end)
+    {
+        $data = $this->incomeStatementData($start, $end);
+        return view('reports.income-statement', $data);
+    }
+
+
+    private function incomeStatementData($start, $end)
+    {
+        // 1. Pendapatan (Revenue)
+        $pendapatan = Account::whereHas('category', fn($q)=> 
+            $q->where('name', 'revenue')
+        )->get();
+
+        $totalPendapatan = 0;
+        foreach ($pendapatan as $acc) {
+            $saldo = $this->calculateAccountBalance($acc, $end);
+            $totalPendapatan += $saldo;
         }
 
-        $netIncome = $totalRevenue - $totalExpense;
+        // 2. HPP (COGS)
+        $hpp = Account::whereHas('category', fn($q)=> 
+            $q->where('name', 'hpp')
+        )->get();
 
-        return view('reports.income-statement', compact('revenues', 'expenses', 'totalRevenue', 'totalExpense', 'netIncome', 'start', 'end'));
-    }
-
-    // Laporan Perubahan Modal (Changes in Equity)
-    private function changesInEquity($start, $end)
-    {
-        // Hitung perubahan equity dalam periode, termasuk laba bersih
-        $equities = Account::where('type', 'equity')->get();
-        $initialEquity = 0;
-        $finalEquity = 0;
-
-        foreach ($equities as $account) {
-            $initialEquity += $this->getAccountBalance($account, $start . ' 00:00:00'); // Saldo awal periode
-            $finalEquity += $this->getAccountBalance($account, $end);
+        $totalHPP = 0;
+        foreach ($hpp as $acc) {
+            $saldo = $this->calculateAccountBalance($acc, $end);
+            $totalHPP += $saldo;
         }
 
-        // Tambahkan laba bersih dari income statement
-        $netIncome = $this->calculateNetIncome($start, $end);
-        $finalEquity += $netIncome;
+        // 3. Laba Kotor
+        $labaKotor = $totalPendapatan - $totalHPP;
 
-        $changes = $finalEquity - $initialEquity;
+        // 4. Beban Operasional
+        $beban = Account::whereHas('category', fn($q)=> 
+            $q->where('name', 'expense')
+        )->get();
 
-        return view('reports.changes-in-equity', compact('equities', 'initialEquity', 'finalEquity', 'netIncome', 'changes', 'start', 'end'));
-    }
+        $daftarBeban = [];
+        $totalBeban = 0;
 
-    // Helper: Hitung saldo akun hingga tanggal tertentu
-    private function getAccountBalance($account, $date)
-    {
-        return $account->ledger()->where('date', '<=', $date)->orderBy('date', 'desc')->value('balance') ?? $account->balance ?? 0;
-    }
-
-    // Helper: Hitung pergerakan akun dalam periode (debit atau credit)
-    private function getAccountMovement($account, $start, $end, $type)
-    {
-        return $account->journalEntries()->whereHas('journal', function ($q) use ($start, $end) {
-            $q->whereBetween('date', [$start, $end]);
-        })->sum($type);
-    }
-
-    // Helper: Hitung laba bersih (untuk changes in equity)
-    private function calculateNetIncome($start, $end)
-    {
-        $totalRevenue = Account::where('type', 'revenue')->get()->sum(function ($account) use ($start, $end) {
-            return $this->getAccountMovement($account, $start, $end, 'credit');
-        });
-
-        $totalExpense = Account::where('type', 'expense')->get()->sum(function ($account) use ($start, $end) {
-            return $this->getAccountMovement($account, $start, $end, 'debit');
-        });
-
-        return $totalRevenue - $totalExpense;
-    }
-
-    // Halaman neraca saldo (trial balance) - tetap ada
-    public function trialBalance()
-    {
-        $accounts = Account::all();
-
-        $data = [];
-        foreach ($accounts as $account) {
-            $debit = $account->journalEntries()->sum('debit');
-            $credit = $account->journalEntries()->sum('credit');
-
-            $data[] = [
-                'account' => $account->name,
-                'debit' => $debit,
-                'credit' => $credit,
+        foreach ($beban as $acc) {
+            $saldo = $this->calculateAccountBalance($acc, $end);
+            $daftarBeban[] = [
+                'name'  => $acc->name,
+                'total' => $saldo
             ];
+            $totalBeban += $saldo;
         }
 
-        $totalDebit = array_sum(array_column($data, 'debit'));
-        $totalCredit = array_sum(array_column($data, 'credit'));
+        // Jika kamu ingin total operasional = total beban (bisa diganti jika ada kategori lain)
+        $totalOperasional = $totalBeban;
 
-        return view('reports.trial-balance', compact('data', 'totalDebit', 'totalCredit'));
+        // 5. Pendapatan Non Operasional
+        $pendNonOp = Account::whereHas('category', fn($q)=> 
+            $q->where('name', 'pendapatan_non_operasional')
+        )->get()
+        ->sum(fn($acc)=> $this->calculateAccountBalance($acc, $end));
+
+        // 6. Beban Non Operasional
+        $bebanNonOp = Account::whereHas('category', fn($q)=> 
+            $q->where('name', 'beban_non_operasional')
+        )->get()
+        ->sum(fn($acc)=> $this->calculateAccountBalance($acc, $end));
+
+        // 7. Laba Bersih
+        $labaBersih = $labaKotor - $totalOperasional + $pendNonOp - $bebanNonOp;
+
+        return [
+            'start' => $start,
+            'end'   => $end,
+
+            'totalPendapatan' => $totalPendapatan,
+            'totalHPP'        => $totalHPP,
+            'labaKotor'       => $labaKotor,
+
+            'daftarBeban'     => $daftarBeban,
+            'totalBeban'      => $totalBeban,
+            'totalOperasional'=> $totalOperasional,
+
+            'pendNonOp'       => $pendNonOp,
+            'bebanNonOp'      => $bebanNonOp,
+
+            'labaBersih'      => $labaBersih,
+        ];
+    }
+
+    public function exportIncomePdf(Request $request)
+    {
+        $start = $request->period_start;
+        $end   = $request->period_end;
+
+        $data = $this->incomeStatementData($start, $end);
+
+        $pdf = Pdf::loadView('reports.pdf.income-statement-pdf', $data);
+
+        return $pdf->download("income-statement-{$start}-{$end}.pdf");
+    }
+
+
+    public function showChangesInEquity($start, $end)
+    {
+        $data = $this->changesInEquityData($start, $end);
+        return view('reports.changes-in-equity', $data);
+    }
+
+    private function changesInEquityData($start, $end)
+    {
+        // ---- 1. Hitung Modal Awal (saldo equity sebelum periode mulai) ----
+        $modalAkun = Account::whereHas('category', fn($q) =>
+            $q->where('code','3100')
+        )->get();
+
+        $modalAwal = 0;
+        foreach ($modalAkun as $acc) {
+            $modalAwal += $this->calculateAccountBalance($acc, $end);
+        }
+
+        // ---- 2. Hitung Laba Bersih dari Income Statement ----
+        $incomeData = $this->incomeStatementData($start, $end);
+        $labaBersih = $incomeData['labaBersih'];
+
+        // ---- 3. Prive (penarikan pemilik) ----
+        $prive = Account::whereHas('category', fn($q) =>
+            $q->where('code','3102')
+        )->get()
+        ->sum(fn($acc) => abs($this->calculateAccountBalance($acc, $end)));
+
+
+        // ---- 4. Investasi Tambahan Pemilik ----
+        $investasiTambah = Account::whereHas('category', fn($q) =>
+            $q->where('name', 'capital_injection')
+        )->get()
+        ->sum(fn($acc) => $this->calculateAccountBalance($acc, $end));
+
+        // ---- 5. Hitung Modal Akhir ----
+        $modalAkhir = $modalAwal + $labaBersih - $prive + $investasiTambah;
+
+        return [
+            'start'           => $start,
+            'end'             => $end,
+
+            'modalAwal'       => $modalAwal,
+            'labaBersih'      => $labaBersih,
+            'Prive'           => $prive,
+            'investasiTambah' => $investasiTambah,
+
+            'modalAkhir'      => $modalAkhir,
+        ];
+    }
+
+    public function exportEquityPdf(Request $request)
+    {
+        $start = $request->period_start;
+        $end   = $request->period_end;
+
+        $data = $this->changesInEquityData($start, $end);
+        
+        $pdf = Pdf::loadView('reports.pdf.changes-in-equity-pdf', $data);
+
+        return $pdf->download("changes-in-equity-{$start}-{$end}.pdf");
+    }
+
+
+
+
+
+    // ===============================
+    // HITUNG SALDO AKUN
+    // ===============================
+    private function calculateAccountBalance($account, $endDate)
+    {
+        $entries = $account->journalEntries()
+            ->whereHas('journal', fn($q) => $q->where('date', '<=', $endDate))
+            ->get();
+
+        $normal = strtolower($account->category->normal_balance);
+
+        $balance = 0;
+
+        foreach ($entries as $entry) {
+            if ($normal === 'debit') {
+                $balance += ($entry->debit - $entry->credit);
+            } else {
+                $balance += ($entry->credit - $entry->debit);
+            }
+        }
+
+        return $balance;
     }
 }

@@ -94,17 +94,32 @@
     }
 </style>
 
-
 <div class="ledger-wrapper">
     <h1 class="ledger-title">Buku Besar (General Ledger)</h1>
+
+    <!-- FORM FILTER TANGGAL -->
+    <form action="{{ route('ledgers.index') }}" method="GET" style="margin-bottom: 25px;">
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <div>
+                <label>Start Date:</label>
+                <input type="date" name="start_date" value="{{ $startDate ?? '' }}">
+            </div>
+            <div>
+                <label>End Date:</label>
+                <input type="date" name="end_date" value="{{ $endDate ?? '' }}">
+            </div>
+            <button type="submit" style="padding: 5px 12px; background-color:#3246D3; color:white; border:none; border-radius:6px;">Filter</button>
+            <a href="{{ route('ledgers.index') }}" style="padding: 5px 12px; background:#888; color:white; border-radius:6px; text-decoration:none;">Reset</a>
+        </div>
+    </form>
 
     @foreach($accounts as $account)
     <div class="ledger-card">
 
         <!-- HEADER -->
         <div class="ledger-header">
-            {{ $account->name }}
-            <small>Kode Akun: {{ $account->code }}</small>
+            {{ $account['name'] }}
+            <small>Kode Akun: {{ $account['code'] }}</small>
         </div>
 
         <!-- TABLE -->
@@ -119,32 +134,17 @@
             </thead>
 
             <tbody>
-                @php
-                    $balance = $account->balance ?? 0;
-                @endphp
-
-                @forelse ($account->journalEntries as $entry)
-                <tr>
-                    <td class="text-center">
-                        {{ \Carbon\Carbon::parse($entry->journal->date)->format('d M Y') }}
-                    </td>
-
-                    <td class="text-end">
-                        {{ $entry->debit ? number_format($entry->debit, 2, ',', '.') : '-' }}
-                    </td>
-
-                    <td class="text-end">
-                        {{ $entry->credit ? number_format($entry->credit, 2, ',', '.') : '-' }}
-                    </td>
-
-                    <td class="text-end saldo-bold">
-                        {{ number_format($balance += $entry->debit - $entry->credit, 2, ',', '.') }}
-                    </td>
-                </tr>
+                @forelse ($account['entries'] as $entry)
+                    <tr>
+                        <td class="text-center">{{ \Carbon\Carbon::parse($entry['date'])->format('d M Y') }}</td>
+                        <td class="text-end">{{ $entry['debit'] ? number_format($entry['debit'], 2, ',', '.') : '-' }}</td>
+                        <td class="text-end">{{ $entry['credit'] ? number_format($entry['credit'], 2, ',', '.') : '-' }}</td>
+                        <td class="text-end saldo-bold">{{ number_format($entry['balance'], 2, ',', '.') }}</td>
+                    </tr>
                 @empty
-                <tr>
-                    <td colspan="4" class="no-entry">Belum ada transaksi pada akun ini</td>
-                </tr>
+                    <tr>
+                        <td colspan="4" class="no-entry">Belum ada transaksi pada akun ini</td>
+                    </tr>
                 @endforelse
             </tbody>
         </table>
@@ -152,5 +152,6 @@
     @endforeach
 
 </div>
+
 
 @endsection

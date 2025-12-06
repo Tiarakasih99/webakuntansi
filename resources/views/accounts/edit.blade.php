@@ -1,6 +1,4 @@
-@extends('layouts.main') <!-- Ganti 'layouts.app' dengan layout utama Anda jika berbeda -->
-
-@section('title', 'Edit Akun') <!-- Opsional, untuk konsistensi dengan index -->
+@extends('layouts.main')
 
 @section('content')
 <div class="container">
@@ -16,9 +14,9 @@
         </div>
     @endif
 
-    <form action="{{ route('accounts.update', $account) }}" method="POST">
-        @csrf <!-- Token CSRF untuk keamanan -->
-        @method('PUT') <!-- Metode PUT untuk update -->
+    <form action="{{ route('accounts.update', $account->id) }}" method="POST">
+        @csrf
+        @method('PUT')
 
         <div class="form-group">
             <label for="code">Kode Akun</label>
@@ -31,8 +29,19 @@
             <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $account->name) }}" required>
             <small class="form-text text-muted">Wajib.</small>
         </div>
-
         <div class="form-group">
+            <label for="category_id">Kategori Akun</label>
+            <select name="category_id" id="category_id" class="form-control" required>
+                @foreach ($categories as $cat)
+                    <option value="{{ $cat->id }}" 
+                        {{ $account->category_id == $cat->id ? 'selected' : '' }}>
+                        {{ $cat->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- <div class="form-group">
             <label for="type">Tipe Akun</label>
             <select name="type" id="type" class="form-control" required>
                 <option value="">Pilih Tipe</option>
@@ -43,7 +52,7 @@
                 <option value="expense" {{ old('type', $account->type) == 'expense' ? 'selected' : '' }}>Expense</option>
             </select>
             <small class="form-text text-muted">Wajib, pilih salah satu.</small>
-        </div>
+        </div> -->
 
         <div class="form-group">
             <label for="balance">Saldo Awal</label>

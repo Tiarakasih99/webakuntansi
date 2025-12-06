@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg shadow-sm" style="background: linear-gradient(90deg, #283f61ff, #75a5eeff);">
+<nav class="navbar navbar-expand-lg shadow-sm fixed-top" style="background: linear-gradient(90deg, #283f61ff, #75a5eeff);">
     <div class="container-fluid">
         <a class="navbar-brand text-white fw-bold" href="{{ url('/') }}">
             <i class="bi bi-calculator me-2"></i> Adeste & Co.
@@ -40,4 +40,9 @@
 .dropdown-menu {
     border-radius: 10px;
 }
+
+.navbar {
+    height: 70px; /* dipakai untuk posisi sidebar */
+}
+
 </style>

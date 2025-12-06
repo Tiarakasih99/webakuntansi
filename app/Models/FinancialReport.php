@@ -8,7 +8,7 @@ class FinancialReport extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['type', 'period_start', 'period_end', 'data', 'total_assets', 'total_liabilities', 'total_equity', 'net_income', 'user_id'];
+    protected $fillable = ['category_id', 'period_start', 'period_end', 'data', 'total_assets', 'total_liabilities', 'total_equity', 'net_income', 'user_id'];
 
     protected $casts = ['data' => 'array']; // Untuk JSON
 }

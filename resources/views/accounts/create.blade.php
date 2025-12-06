@@ -28,8 +28,17 @@
             <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required>
             <small class="form-text text-muted">Wajib.</small>
         </div>
-
         <div class="form-group">
+            <label for="category_id">Kategori Akun</label>
+            <select name="category_id" id="category_id" class="form-control" required>
+                <option value="">Pilih Kategori</option>
+                @foreach ($categories as $cat)
+                    <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- <div class="form-group">
             <label for="type">Tipe Akun</label>
             <select name="type" id="type" class="form-control" required>
                 <option value="">Pilih Tipe</option>
@@ -40,7 +49,7 @@
                 <option value="expense" {{ old('type') == 'expense' ? 'selected' : '' }}>Expense</option>
             </select>
             <small class="form-text text-muted">Wajib, pilih salah satu.</small>
-        </div>
+        </div> -->
 
         <div class="form-group">
             <label for="balance">Saldo Awal</label>

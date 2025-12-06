@@ -1,65 +1,84 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Account;
+use App\Models\AccountCategory; // <-- tambahan
 use Illuminate\Http\Request;
 
 class AccountController extends Controller
 {
-    // Tampilkan daftar akun
     public function index()
     {
         $accounts = Account::orderBy('code')->get();
         return view('accounts.index', compact('accounts'));
     }
 
-    // Tampilkan form buat akun baru
     public function create()
     {
-        return view('accounts.create');
+        $categories = AccountCategory::all(); // <-- tambahan
+        return view('accounts.create', compact('categories')); // <-- tambahan
     }
 
-    // Simpan data akun baru
     public function store(Request $request)
     {
         $request->validate([
             'code' => 'required|unique:accounts,code|max:10',
-            'name' => 'required|string',
-            'type' => 'required|in:asset,liability,equity,revenue,expense',
+            'name' => 'required',
+            // 'type' => 'required|in:asset,liability,equity,revenue,expense',
             'balance' => 'nullable|numeric',
+            'category_id' => 'required|exists:account_categories,id' // <-- tambahan
         ]);
 
-        Account::create($request->all());
+        Account::create([
+            'code' => $request->code,
+            'name' => $request->name,
+            // 'type' => $request->type,
+            'balance' => $request->balance ?? 0,
+            'category_id' => $request->category_id, // <-- tambahan
+        ]);
 
-        return redirect()->route('accounts.index')->with('success', 'Akun berhasil dibuat.');
+        return redirect()->route('accounts.index')
+                         ->with('success', 'Akun berhasil ditambahkan.');
     }
 
-    // Tampilkan form edit akun
-    public function edit(Account $account)
+    public function edit($id)
     {
-        return view('accounts.edit', compact('account'));
+        $account = Account::findOrFail($id);
+        $categories = AccountCategory::all(); // <-- tambahan
+
+        return view('accounts.edit', compact('account', 'categories')); // <-- tambahan
     }
 
-    // Update akun
-    public function update(Request $request, Account $account)
+    public function update(Request $request, $id)
     {
+        $account = Account::findOrFail($id);
+
         $request->validate([
             'code' => 'required|max:10|unique:accounts,code,' . $account->id,
-            'name' => 'required|string',
-            'type' => 'required|in:asset,liability,equity,revenue,expense',
+            'name' => 'required',
+            // 'type' => 'required|in:asset,liability,equity,revenue,expense',
             'balance' => 'nullable|numeric',
+            'category_id' => 'required|exists:account_categories,id' // <-- tambahan
         ]);
 
-        $account->update($request->all());
+        $account->update([
+            'code' => $request->code,
+            'name' => $request->name,
+            // 'type' => $request->type,
+            'balance' => $request->balance ?? 0,
+            'category_id' => $request->category_id, // <-- tambahan
+        ]);
 
-        return redirect()->route('accounts.index')->with('success', 'Akun berhasil diperbarui.');
+        return redirect()->route('accounts.index')
+                         ->with('success', 'Akun berhasil diperbarui.');
     }
 
-    // Hapus akun
-    public function destroy(Account $account)
+    public function destroy($id)
     {
+        $account = Account::findOrFail($id);
         $account->delete();
-        return redirect()->route('accounts.index')->with('success', 'Akun berhasil dihapus.');
+
+        return redirect()->route('accounts.index')
+                         ->with('success', 'Akun berhasil dihapus.');
     }
 }

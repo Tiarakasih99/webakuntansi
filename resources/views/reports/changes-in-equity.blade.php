@@ -13,10 +13,11 @@
     }
 
     .report-title {
+        color: #b30000;
         text-align: center;
-        font-size: 24px;
+        font-size: 22px;
         font-weight: bold;
-        margin-bottom: 5px;
+        margin-bottom: 4px;
         text-transform: uppercase;
     }
 
@@ -29,35 +30,47 @@
     .report-table {
         width: 100%;
         font-size: 16px;
+        border-collapse: collapse;
     }
 
     .report-table th {
         font-weight: bold;
-        border-bottom: 2px solid black;
-        padding-bottom: 8px;
+        padding: 8px 0;
+        border-bottom: 2px solid #000;
+        text-align: left;
     }
 
     .report-table td {
-        padding: 6px 0;
+        padding: 8px 0;
     }
 
-    .indent {
-        padding-left: 25px;
+    .text-end {
+        text-align: right;
     }
 
-    .total {
+    .section-title {
         font-weight: bold;
-        border-top: 2px solid black;
-        padding-top: 8px;
+    }
+
+    .total-row {
+        font-weight: bold;
+        border-top: 2px solid #000;
+        padding-top: 10px;
     }
 </style>
 
 <div class="report-container">
+    
+    <form action="{{ route('reports.exportEquityPdf') }}" method="POST" class="text-end mb-3">
+    @csrf
+    <input type="hidden" name="period_start" value="{{ $start }}">
+    <input type="hidden" name="period_end" value="{{ $end }}">
+    <button class="btn btn-danger">Export PDF</button>
+    </form>
 
+    <div class="report-title">Adeste&Co</div>
     <div class="report-title">LAPORAN PERUBAHAN MODAL</div>
-    <div class="report-subtitle">
-        Periode: {{ $start }} s/d {{ $end }}
-    </div>
+    <div class="report-subtitle">Periode: {{ $start }} s/d {{ $end }}</div>
 
     <table class="report-table">
         <tr>
@@ -66,31 +79,29 @@
         </tr>
 
         <tr>
-            <td><strong>Ekuitas Awal</strong></td>
-            <td class="text-end">{{ number_format($initialEquity, 2, ',', '.') }}</td>
+            <td class="section-title">Modal Awal</td>
+            <td class="text-end">{{ number_format($modalAwal, 2, ',', '.') }}</td>
         </tr>
 
         <tr>
-            <td><strong>Laba Bersih</strong></td>
-            <td class="text-end">{{ number_format($netIncome, 2, ',', '.') }}</td>
+            <td class="section-title">Laba Bersih</td>
+            <td class="text-end">{{ number_format($labaBersih, 2, ',', '.') }}</td>
         </tr>
 
         <tr>
-            <td><strong>Prive / Penarikan Pemilik</strong></td>
-            <td class="text-end">{{ number_format($ownerDraw ?? 0, 2, ',', '.') }}</td>
+            <td class="section-title">Prive / Penarikan Pemilik</td>
+            <td class="text-end">{{ number_format($Prive, 2, ',', '.') }}</td>
         </tr>
 
         <tr>
-            <td class="total"><strong>Ekuitas Akhir</strong></td>
-            <td class="total text-end">{{ number_format($finalEquity, 2, ',', '.') }}</td>
+            <td class="total-row">Modal Akhir</td>
+            <td class="total-row text-end">{{ number_format($modalAkhir, 2, ',', '.') }}</td>
         </tr>
 
         <tr>
-            <td><strong>Perubahan Modal</strong></td>
-            <td class="text-end">{{ number_format($changes, 2, ',', '.') }}</td>
+            <td class="section-title">Perubahan Modal</td>
+            <td class="text-end">{{ number_format($modalAkhir, 2, ',', '.') }}</td>
         </tr>
-
     </table>
-
 </div>
 @endsection
