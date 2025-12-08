@@ -6,10 +6,24 @@ use App\Http\Controllers\JournalController;
 use App\Http\Controllers\LedgerController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TrialBalanceController;
+use App\Http\Controllers\AuthController;
 
-// Route::get('/', function () {
-//     return view('compro.home');
-// });
+Route::get('/', function () {
+    return view('compro.home');
+});
+
+
+
+
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.process');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
+
+    // Route lain taruh di sini
+});
 
 Route::view('/jurnal', 'pages.transaksi.jurnal')->name('jurnal.index');
 Route::view('/buku-besar', 'pages.transaksi.buku_besar')->name('buku_besar.index');
@@ -47,9 +61,9 @@ Route::post('/laporan/laba-rugi/generate', [LabaRugiController::class, 'generate
 
 
 // Halaman utama, bisa redirect ke jurnal misalnya
-Route::get('/', function () {
-    return redirect()->route('journals.index');
-});
+// Route::get('/', function () {
+//     return redirect()->route('journals.index');
+// });
 
 // Resource routes untuk Akun Perkiraan (CRUD lengkap)
 Route::resource('accounts', AccountController::class);
