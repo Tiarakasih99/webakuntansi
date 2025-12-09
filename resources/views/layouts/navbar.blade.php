@@ -1,10 +1,10 @@
-<nav class="navbar navbar-expand-lg shadow-sm fixed-top" style="background: linear-gradient(90deg, #283f61ff, #75a5eeff);">
+<nav class="navbar navbar-expand-lg shadow-sm fixed-top" style="background: linear-gradient(90deg, #594D9B, #C8CDEA);">
     <div class="container-fluid">
-        <a class="navbar-brand text-white fw-bold" href="{{ url('/') }}">
-            <i class="bi bi-calculator me-2"></i> Adeste & Co.
+        <a class="navbar-brand">
+            <img src="{{ asset('img/logo.png') }}" alt="Logo" style="height:40px; justify-content: right;">
         </a>
 
-        <button class="navbar-toggler text-white border-white" type="button" 
+        <button class="navbar-toggler text-white border-white" type="button"
             data-bs-toggle="collapse" 
             data-bs-target="#navbarSupportedContent">
             <span class="navbar-toggler-icon"></span>
@@ -28,6 +28,7 @@
         </div>
     </div>
 </nav>
+
 <style>
 .navbar-toggler {
     border-color: white;
@@ -42,7 +43,9 @@
 }
 
 .navbar {
-    height: 70px; /* dipakai untuk posisi sidebar */
+    width: calc(100% - 275px);
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    height: 55px;
 }
-
 </style>
