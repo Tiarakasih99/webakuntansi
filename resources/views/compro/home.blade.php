@@ -348,7 +348,7 @@
       <a href="#contact">Contact</a>
     </div>
 
-    <a class="btn-ghost" href="/admin/login">Admin</a>
+    <a class="btn-ghost" href="/login">Admin</a>
   </nav>
 
   <!-- HERO -->

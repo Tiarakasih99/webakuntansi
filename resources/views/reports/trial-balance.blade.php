@@ -3,7 +3,7 @@
 @section('title', 'Neraca Saldo')
 
 @section('content')
-<div class="container">
+<div class="container p-3">
     <h2 class="mb-4">Neraca Saldo</h2>
 
     <form method="GET" class="mb-4">

@@ -10,6 +10,7 @@
         max-width: 1000px;
         margin: auto;
         font-family: "Inter", "Segoe UI", sans-serif;
+        padding: 30px;
     }
 
     .ledger-title {

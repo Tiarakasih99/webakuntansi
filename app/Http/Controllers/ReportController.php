@@ -228,10 +228,8 @@ class ReportController extends Controller
     private function changesInEquityData($start, $end)
     {
         // ---- 1. Hitung Modal Awal (saldo equity sebelum periode mulai) ----
-        $modalAkun = Account::whereHas('category', fn($q) =>
-            $q->where('code','3100')
-        )->get();
-
+        $modalAkun = Account::where('code', '3100')->get();
+        
         $modalAwal = 0;
         foreach ($modalAkun as $acc) {
             $modalAwal += $this->calculateAccountBalance($acc, $end);

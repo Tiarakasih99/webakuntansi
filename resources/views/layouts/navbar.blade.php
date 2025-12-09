@@ -27,6 +27,11 @@
             </ul>
         </div>
     </div>
+        <form action="{{ route('logout') }}" method="POST">
+        @csrf
+        <button class="btn btn-danger btn-sm">Logout</button>
+    </form>
+
 </nav>
 
 <style>
