@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <title>Laporan Perubahan Modal</title>
     <style>
-    <style>
         .report-container {
             background: #fff;
             padding: 40px;
@@ -16,7 +15,7 @@
         }
 
         .report-title {
-            color: #b30000;
+            color: #570f8fff;
             text-align: center;
             font-size: 22px;
             font-weight: bold;

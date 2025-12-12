@@ -39,7 +39,7 @@
     /* ====== HEADER ====== */
     .ledger-header {
         padding: 18px 25px;
-        background: linear-gradient(135deg, #3246D3, #6676F5);
+        background: linear-gradient(90deg, #5d53a6, #8fa1e0);;
         color: white;
         font-size: 18px;
         font-weight: 600;
@@ -78,6 +78,10 @@
         background: #fafafa;
     }
 
+    .filter-grid input[type="date"] {
+        padding: 8px 12px;
+    }
+
     .text-end {
         text-align: right;
     }
@@ -100,7 +104,7 @@
 
     <!-- FORM FILTER TANGGAL -->
     <form action="{{ route('ledgers.index') }}" method="GET" style="margin-bottom: 25px;">
-        <div style="display: flex; gap: 10px; align-items: center;">
+        <div class="filter-grid" style="display: flex; gap: 10px; align-items: center;">
             <div>
                 <label>Start Date:</label>
                 <input type="date" name="start_date" value="{{ $startDate ?? '' }}">
@@ -109,8 +113,8 @@
                 <label>End Date:</label>
                 <input type="date" name="end_date" value="{{ $endDate ?? '' }}">
             </div>
-            <button type="submit" style="padding: 5px 12px; background-color:#3246D3; color:white; border:none; border-radius:6px;">Filter</button>
-            <a href="{{ route('ledgers.index') }}" style="padding: 5px 12px; background:#888; color:white; border-radius:6px; text-decoration:none;">Reset</a>
+            <button type="submit" style="padding: 5px 53px; margin-left: 10px; background: linear-gradient(90deg, #5d53a6, #8fa1e0); border: none; border-radius: 6px; color: #fff; cursor: pointer; font-weight: 500;">Filter</button>
+            <a href="{{ route('ledgers.index') }}" style="padding: 5px 53px; background:#888; color:white; border-radius:6px; text-decoration:none;">Reset</a>
         </div>
     </form>
 
@@ -151,8 +155,5 @@
         </table>
     </div>
     @endforeach
-
 </div>
-
-
 @endsection
