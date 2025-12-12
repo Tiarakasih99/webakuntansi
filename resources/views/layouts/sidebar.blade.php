@@ -45,30 +45,27 @@
 </div>
 <style>
 #sidebar {
-    position: fixed;
-    top: 70px;               /* turun sejajar navbar */
-    left: 0;
-    width: 260px;
-    height: calc(100vh - 70px); /* tinggi dikurangi navbar */
-    background: linear-gradient(180deg, #476797ff, #084298);
-    color: white;
-    overflow-y: auto;        /* bisa scroll kalau panjang */
+    background: linear-gradient(180deg, rgba(207,195,241,0.18), rgba(184,197,243,0.18), rgba(164,184,242,0.18)), 
+                url('/images/bg-sidebar.jpg');
+    background-size: cover;
+    background-position: center;
+    backdrop-filter: blur(25px);
 }
-
 
 .sidebar-header {
     text-align: center;
     padding: 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.2);
+    border-bottom: 1px solid rgba(255,255,255,0.35);
 }
 
 .sidebar-header h4 {
     margin: 0;
     font-weight: bold;
+    color: #1e1e2c;
 }
 
 .sidebar-header small {
-    color: #d1d1d1;
+    color: #3b3b48;
 }
 
 .sidebar-menu {
@@ -84,19 +81,21 @@
 .sidebar-menu a {
     display: block;
     padding: 12px 20px;
-    color: white;
+    color: #1d1d2d;
     text-decoration: none;
     transition: 0.3s;
     font-weight: 500;
-}
-
-.sidebar-menu a:hover {
-    background-color: rgba(255,255,255,0.15);
-    padding-left: 30px;
-    border-left: 4px solid #ffc107;
+    border-left: 4px solid transparent;
 }
 
 .sidebar-menu i {
     margin-right: 10px;
+}
+
+.sidebar-menu a:hover {
+    background-color: rgba(255, 255, 255, 0.35);
+    padding-left: 30px;
+    border-left: 4px solid #7b95ff;
+    color: #111127;
 }
 </style>
