@@ -4,9 +4,6 @@
 
 @section('content')
 
-{{-- ============================= --}}
-{{--        CUSTOM STYLE          --}}
-{{-- ============================= --}}
 <style>
 /* ===== DASHBOARD THEME: Soft Purple Fitness UI ===== */
 
@@ -17,7 +14,7 @@
 
     /* ==== Card Premium Style ==== */
     .card-premium {
-        background: #ffffff;
+        background: #ffffffff;
         border-radius: 22px;
         padding: 26px 28px;
         box-shadow: 0 8px 25px rgba(128, 118, 255, 0.18);
@@ -39,7 +36,7 @@
     }
 
     .metric-value {
-        font-size: 26px;
+        font-size: 20px;
         font-weight: 700;
         color: #1e2330;
         margin-top: 6px;
@@ -101,18 +98,12 @@
     h6, h3 {
         color: #1f2440 !important;
     }
-
 </style>
-
 
 <div class="container-fluid px-4 py-3">
 
     <h3 class="fw-bold mb-4" style="color:#1b2737;">Dashboard Keuangan</h3>
 
-
-    {{-- ============================= --}}
-    {{--          TOP METRICS         --}}
-    {{-- ============================= --}}
     <div class="row g-4">
 
         <div class="col-md-3">
@@ -156,7 +147,7 @@
                 <div class="metric-icon icon-purple">
                     <i class="bi bi-graph-up-arrow"></i>
                 </div>
-                <div class="metric-label">Laba Bersih Bulan Ini</div>
+                <div class="metric-label">Laba Bersih</div>
                 <div class="metric-value {{ $profitThisMonth >= 0 ? 'text-success':'text-danger' }}">
                     <small>Rp</small>{{ number_format($profitThisMonth,0,',','.') }}
                 </div>

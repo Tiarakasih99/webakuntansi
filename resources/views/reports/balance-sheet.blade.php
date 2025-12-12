@@ -13,9 +13,9 @@
     }
 
     .report-title {
-        color: #b30000;
+        color: #570f8fff;
         text-align: center;
-        font-size: 24px;
+        font-size: 22px;
         font-weight: bold;
         margin-bottom: 5px;
         text-transform: uppercase;
@@ -23,13 +23,13 @@
 
     .report-subtitle {
         text-align: center;
-        font-size: 16px;
+        font-size: 15px;
         margin-bottom: 25px;
     }
 
     .report-table {
         width: 100%;
-        font-size: 16px;
+        font-size: 15px;
     }
 
     .report-table th {
@@ -39,7 +39,7 @@
     }
 
     .report-table td {
-        padding: 6px 0;
+        padding: 7px 0;
     }
 
     .indent {
@@ -125,5 +125,4 @@
     </table>
 
 </div>
-
 @endsection
