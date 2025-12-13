@@ -1,77 +1,71 @@
-@extends('layouts.main')
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Laporan Laba Rugi</title>
+    <style>
+        .report-container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            max-width: 850px;
+            margin: auto;
+            font-family: "Times New Roman", serif;
+        }
 
-@section('content')
-<style>
-    .report-container {
-        background: #fff;
-        padding: 40px;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        max-width: 850px;
-        margin: auto;
-        font-family: "Times New Roman", serif;
-    }
+        .report-title {
+            color: #570f8f;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        
+        .report-subtitle {
+            text-align: center;
+            font-size: 15px;
+            margin-bottom: 25px;
+        }
+        
+        table.report-table {
+            width: 100%;
+            font-size: 15px;
+            border-collapse: collapse;
+        }
+        
+        .report-table td {
+            padding: 7px 0;
+        }
 
-    .report-title {
-        color: #570f8fff;
-        text-align: center;
-        font-size: 22px;
-        font-weight: bold;
-        margin-bottom: 5px;
-        text-transform: uppercase;
-    }
+        .indent {
+            padding-left: 25px;
+        }
+        
+        .total-line {
+            border-top: 1px solid #000;
+            font-weight: bold;
+        }
 
-    .report-subtitle {
-        text-align: center;
-        font-size: 15px;
-        margin-bottom: 25px;
-    }
-
-    .report-table {
-        width: 100%;
-        font-size: 15px;
-        border-collapse: collapse;
-    }
-
-    .report-table td {
-        padding: 7px 0;
-    }
-
-    .indent {
-        padding-left: 25px;
-    }
-
-    .total-line {
-        border-top: 1px solid #000;
-        font-weight: bold;
-    }
-
-    .section-title {
-        font-weight: bold;
-        padding-top: 10px;
-    }
-
-    .text-end {
-        text-align: right;
-    }
-</style>
-
-<div class="report-container">
-
-    <form action="{{ route('reports.exportIncomePdf') }}" method="POST" class="text-end mb-3">
-        @csrf
-        <input type="hidden" name="period_start" value="{{ $start }}">
-        <input type="hidden" name="period_end" value="{{ $end }}">
-        <button class="btn btn-danger">Export PDF</button>
-    </form>
-
-    <div class="report-title">Adésté & Co.</div>
-    <div class="report-title">Laporan Laba/Rugi (Standar)</div>
-    <div class="report-subtitle">
-        Periode: {{ $start }} s/d {{ $end }}
-    </div>
-
-    <table class="report-table">
+        .section-title {
+            font-weight: bold;
+            padding-top: 10px;
+        }
+        
+        .text-end {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div  class="report-container">
+        <div class="report-title">Adésté & Co.</div>
+        <div class="report-title">Laporan Laba/Rugi (Standar)</div>
+        <div class="report-subtitle">
+            Periode: {{ $start }} s/d {{ $end }}
+        </div>
+        <table class="report-table">
 
         {{-- PENDAPATAN --}}
         <tr>
@@ -156,5 +150,5 @@
         </tr>
 
     </table>
-</div>
-@endsection
+</body>
+</html>

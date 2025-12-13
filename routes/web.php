@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -124,3 +125,6 @@ Route::get('/trial-balance/export-pdf', [TrialBalanceController::class, 'exportP
 
 Route::get('/ledgers', [LedgerController::class, 'index'])->name('ledgers.index');
 Route::get('/ledgers/export-pdf', [LedgerController::class, 'exportPdf'])->name('ledgers.export-pdf');
+Route::get('/journals/export/pdf-detail', 
+    [JournalController::class, 'exportPdfDetail']
+)->name('journals.export.pdf.detail');

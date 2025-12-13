@@ -1,3 +1,4 @@
+
 @extends('layouts.main')
 
 @section('title', 'Jurnal Umum')
@@ -8,12 +9,17 @@
 <div class="container-fluid p-3">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="title-akun">Jurnal Umum</h3>
+            <h3 class="title-akun">Jurnal Umum</h3>
+                
+                <a href="{{ route('journals.export.pdf.detail') }}" class="btn-export-pdf">
+                    Export PDF (Detail)
+                </a>
 
-        <a href="{{ route('journals.create') }}" class="btn-add-akun">
-            + Tambah Jurnal Baru
-        </a>
-    </div>
+                <a href="{{ route('journals.create') }}" class="btn-add-akun">
+                    + Tambah Jurnal Baru
+                </a>
+            </div>
+        </div>
 
     <div class="form-card mt-3">
         <div class="p-3">
