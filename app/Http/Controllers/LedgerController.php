@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Account;
 use Illuminate\Http\Request;
+use PDF;
 
 class LedgerController extends Controller
 {
@@ -12,46 +13,48 @@ class LedgerController extends Controller
         $startDate = $request->start_date;
         $endDate = $request->end_date;
 
-        // Ambil akun beserta kategori dan journal entries
         $accounts = Account::with(['category', 'journalEntries.journal'])
             ->get()
-            ->sortBy(function($account) {
-                // Urutan akun sesuai standar akuntansi
+            ->sortBy(function ($account) {
                 $type = strtolower($account->category->name ?? '');
-                switch ($type) {
-                    case 'asset': return 1;
-                    case 'liability': return 2;
-                    case 'equity': return 3;
-                    case 'revenue': return 4;
-                    case 'expense': return 5;
-                    default: return 6;
-                }
+                return match ($type) {
+                    'asset' => 1,
+                    'liability' => 2,
+                    'equity' => 3,
+                    'revenue' => 4,
+                    'expense' => 5,
+                    default => 6,
+                };
             });
 
         $ledgerData = [];
 
         foreach ($accounts as $account) {
             $entries = [];
-            $balance = 0; // saldo awal = 0
-            $normal = strtolower($account->category->normal_balance ?? 'debit'); // default debit
-            if (strtolower($account->name) === 'Prive') {$normal = 'debit';}
-            
-            // Filter journal entries sesuai tanggal
-            $journals = $account->journalEntries->filter(function($entry) use ($startDate, $endDate) {
-                if ($startDate && $endDate) {
-                    return $entry->journal->date >= $startDate && $entry->journal->date <= $endDate;
-                }
-                return true;
-            })->sortBy('journal.date');
+            $balance = 0;
+
+            $normal = strtolower($account->category->normal_balance ?? 'debit');
+            if (strtolower($account->name) === 'prive') {
+                $normal = 'debit';
+            }
+
+            $journals = $account->journalEntries
+                ->filter(function ($entry) use ($startDate, $endDate) {
+                    if ($startDate && $endDate) {
+                        return $entry->journal->date >= $startDate &&
+                               $entry->journal->date <= $endDate;
+                    }
+                    return true;
+                })
+                ->sortBy('journal.date');
 
             foreach ($journals as $entry) {
                 if ($normal === 'debit') {
                     $balance += ($entry->debit - $entry->credit);
-                } else { // normal credit
+                } else {
                     $balance += ($entry->credit - $entry->debit);
                 }
 
-                // Force saldo Prive dan Akumulasi Penyusutan Peralatan selalu positif
                 $name = strtolower($account->name);
                 if ($name === 'prive' || $name === 'akumulasi penyusutan peralatan') {
                     $balance = abs($balance);
@@ -65,11 +68,9 @@ class LedgerController extends Controller
                 ];
             }
 
-
             $ledgerData[] = [
                 'code' => $account->code,
                 'name' => $account->name,
-                // 'normal_balance' => strtolower($account->category->normal_balance ?? 'debit'), // tambah in
                 'entries' => $entries,
             ];
         }
@@ -79,5 +80,87 @@ class LedgerController extends Controller
             'startDate' => $startDate,
             'endDate' => $endDate,
         ]);
+    }
+
+    // =======================
+    // EXPORT PDF (BUKU BESAR)
+    // =======================
+    public function exportPdf(Request $request)
+    {
+        // 🔥 LOGIKA DISAMAKAN 100% DENGAN INDEX
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+
+        $accounts = Account::with(['category', 'journalEntries.journal'])
+            ->get()
+            ->sortBy(function ($account) {
+                $type = strtolower($account->category->name ?? '');
+                return match ($type) {
+                    'asset' => 1,
+                    'liability' => 2,
+                    'equity' => 3,
+                    'revenue' => 4,
+                    'expense' => 5,
+                    default => 6,
+                };
+            });
+
+        $ledgerData = [];
+
+        foreach ($accounts as $account) {
+            $entries = [];
+            $balance = 0;
+
+            $normal = strtolower($account->category->normal_balance ?? 'debit');
+            if (strtolower($account->name) === 'prive') {
+                $normal = 'debit';
+            }
+
+            $journals = $account->journalEntries
+                ->filter(function ($entry) use ($startDate, $endDate) {
+                    if ($startDate && $endDate) {
+                        return $entry->journal->date >= $startDate &&
+                               $entry->journal->date <= $endDate;
+                    }
+                    return true;
+                })
+                ->sortBy('journal.date');
+
+            foreach ($journals as $entry) {
+                if ($normal === 'debit') {
+                    $balance += ($entry->debit - $entry->credit);
+                } else {
+                    $balance += ($entry->credit - $entry->debit);
+                }
+
+                $name = strtolower($account->name);
+                if ($name === 'prive' || $name === 'akumulasi penyusutan peralatan') {
+                    $balance = abs($balance);
+                }
+
+                $entries[] = [
+                    'date' => $entry->journal->date,
+                    'debit' => $entry->debit,
+                    'credit' => $entry->credit,
+                    'balance' => $balance, // ✅ SEKARANG ADA
+                ];
+            }
+
+            if (count($entries) > 0) {
+                $ledgerData[] = [
+                    'code' => $account->code,
+                    'name' => $account->name,
+                    'entries' => $entries,
+                ];
+            }
+        }
+
+        $pdf = PDF::loadView('ledgers.ledger-pdf', [
+            'accounts' => $ledgerData,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+        ])->setPaper('A4', 'portrait');
+
+        return $pdf->download('Buku_Besar.pdf');
     }
 }

@@ -24,6 +24,7 @@
         height: 100%;
         background-image: url('/img/log_in.png');
         background-size: cover;
+        background-repeat: no-repeat;
         background-position: center;
         display: flex;
         justify-content: flex-end;

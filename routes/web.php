@@ -80,7 +80,7 @@ Route::resource('ledgers', LedgerController::class)->only(['index']);
 // Route untuk Neraca Saldo
 // Route::get('trial-balance', [ReportController::class, 'trialBalance'])->name('trial-balance.index');
 
-Route::get('trial-balance', [TrialBalanceController::class, 'index'])->name('trial.balance');
+
 
 
 // // Route untuk Laporan Keuangan (form dan generate laporan)
@@ -115,3 +115,12 @@ Route::post('/reports/export-income', [ReportController::class, 'exportIncomePdf
     ->name('reports.exportIncomePdf');
 Route::post('/reports/export-equity', [ReportController::class, 'exportEquityPdf'])
     ->name('reports.exportEquityPdf');
+
+Route::get('/trial-balance', [TrialBalanceController::class, 'index'])
+    ->name('trial-balance');
+
+Route::get('/trial-balance/export-pdf', [TrialBalanceController::class, 'exportPdf'])
+    ->name('trial-balance.export-pdf');
+
+Route::get('/ledgers', [LedgerController::class, 'index'])->name('ledgers.index');
+Route::get('/ledgers/export-pdf', [LedgerController::class, 'exportPdf'])->name('ledgers.export-pdf');

@@ -4,15 +4,55 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Account;
+use PDF;
 
 class TrialBalanceController extends Controller
 {
+    /**
+     * TAMPILAN NERACA SALDO
+     */
     public function index(Request $request)
     {
         $startDate = $request->start_date;
         $endDate = $request->end_date;
 
-        // Ambil akun beserta kategori dan jurnalnya
+        $result = $this->buildTrialBalanceData($startDate, $endDate);
+
+        return view('reports.trial-balance', [
+            'data'        => $result['data'],
+            'totalDebit'  => $result['totalDebit'],
+            'totalCredit' => $result['totalCredit'],
+            'startDate'   => $startDate,
+            'endDate'     => $endDate
+        ]);
+    }
+
+    /**
+     * EXPORT PDF
+     */
+    public function exportPdf(Request $request)
+    {
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+
+        $result = $this->buildTrialBalanceData($startDate, $endDate);
+
+        $pdf = PDF::loadView('reports.trial-balance-pdf', [
+            'data'        => $result['data'],
+            'totalDebit'  => $result['totalDebit'],
+            'totalCredit' => $result['totalCredit'],
+            'startDate'   => $startDate,
+            'endDate'     => $endDate
+        ])->setPaper('A4', 'portrait');
+
+        return $pdf->download('Neraca_Saldo.pdf');
+    }
+
+    /**
+     * LOGIC PERHITUNGAN (dipakai index & pdf)
+     */
+    private function buildTrialBalanceData($startDate = null, $endDate = null)
+    {
         $accounts = Account::with(['journalEntries.journal', 'category'])
             ->join('account_categories as ac', 'accounts.category_id', '=', 'ac.id')
             ->orderByRaw("
@@ -33,21 +73,17 @@ class TrialBalanceController extends Controller
         $totalDebit = 0;
         $totalCredit = 0;
 
-        // Normal balance
         $normalDebit = ['Asset', 'Expense'];
         $normalCredit = ['Liability', 'Equity', 'Revenue'];
 
         foreach ($accounts as $account) {
 
-            // saldo awal (bisa kosong = 0)
             $balance = $account->balance ?? 0;
 
             $totalDebits = 0;
             $totalCredits = 0;
 
-            // Hitung pergerakan jurnal dalam rentang tanggal
             foreach ($account->journalEntries as $entry) {
-
                 $entryDate = $entry->journal->date;
 
                 if ($startDate && $endDate) {
@@ -60,20 +96,20 @@ class TrialBalanceController extends Controller
                 $totalCredits += $entry->credit;
             }
 
-            // Hitung saldo akhir sesuai normal balance
             if (in_array($account->type, $normalDebit)) {
-                // Asset / Expense = saldo debit
                 $ending = $balance + ($totalDebits - $totalCredits);
 
                 $debit = $ending >= 0 ? $ending : 0;
                 $credit = $ending < 0 ? abs($ending) : 0;
-
             } else {
-                // Liability / Equity / Revenue = saldo kredit
                 $ending = $balance + ($totalCredits - $totalDebits);
 
                 $credit = $ending >= 0 ? $ending : 0;
                 $debit = $ending < 0 ? abs($ending) : 0;
+            }
+
+            if ($debit == 0 && $credit == 0) {
+                continue;
             }
 
             $totalDebit += $debit;
@@ -87,8 +123,10 @@ class TrialBalanceController extends Controller
             ];
         }
 
-        return view('reports.trial-balance', compact(
-            'data', 'totalDebit', 'totalCredit', 'startDate', 'endDate'
-        ));
+        return [
+            'data'        => $data,
+            'totalDebit'  => $totalDebit,
+            'totalCredit' => $totalCredit
+        ];
     }
 }

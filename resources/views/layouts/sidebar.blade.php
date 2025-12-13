@@ -26,7 +26,7 @@
             </a>
         </li>
         <li>
-            <a href="{{ route('trial.balance') }}" class="{{ Request::routeIs('trial.balance') ? 'active' : '' }}">
+            <a href="{{ route('trial-balance') }}" class="{{ Request::routeIs('trial.balance') ? 'active' : '' }}">
                 <i class="bi bi-calculator"></i> Neraca Saldo
             </a>
         </li>
