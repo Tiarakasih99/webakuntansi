@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-
+    <title>Laporan Posisi Keuangan</title>
     <style>
         body {
             font-family: "Times New Roman", serif;
@@ -14,7 +14,7 @@
         }
 
         .report-title {
-            color: #b30000;
+            color: #570f8fff;
             text-align: center;
             font-size: 22px;
             font-weight: bold;

@@ -16,7 +16,7 @@
         }
 
         .title-red {
-            color: #b30000;
+            color: #570f8fff;
             font-size: 22px;
             font-weight: bold;
             text-align: center;

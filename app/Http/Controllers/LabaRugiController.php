@@ -15,55 +15,71 @@ class LabaRugiController extends Controller
 
     public function generate(Request $request)
     {
-        $start = $request->period_start;
-        $end   = $request->period_end;
+        // Normalisasi format tanggal
+        $start = date('Y-m-d', strtotime($request->period_start));
+        $end   = date('Y-m-d', strtotime($request->period_end));
+
+        // Helper untuk rumus debit/credit yang benar
+        $getSaldo = function($query) {
+            return $query->get()->sum(function ($item) {
+                $normal = $item->account->normal_balance ?? 'debit';
+                return $normal === 'debit'
+                    ? $item->debit - $item->credit
+                    : $item->credit - $item->debit;
+            });
+        };
 
         // =============================
         //        PENDAPATAN (4xxx)
         // =============================
-        $totalPendapatan = JournalEntry::whereHas('account', function($q){
+        $pendapatanQuery = JournalEntry::whereHas('account', function($q) {
                 $q->where('code', 'like', '4%');
             })
-            ->whereHas('journal', fn($q) => $q->whereBetween('date', [$start, $end]))
-            ->sum('credit');
+            ->whereHas('journal', fn($q) => $q->whereBetween('date', [$start, $end]));
+
+        $totalPendapatan = $getSaldo($pendapatanQuery);
 
         // =============================
         //        HPP (5xxx)
         // =============================
-        $totalHPP = JournalEntry::whereHas('account', function($q){
+        $hppQuery = JournalEntry::whereHas('account', function($q) {
                 $q->where('code', 'like', '5%');
             })
-            ->whereHas('journal', fn($q) => $q->whereBetween('date', [$start, $end]))
-            ->sum('debit');
+            ->whereHas('journal', fn($q) => $q->whereBetween('date', [$start, $end]));
+
+        $totalHPP = $getSaldo($hppQuery);
 
         $labaKotor = $totalPendapatan - $totalHPP;
 
         // =============================
         //   BEBAN OPERASIONAL (6xxx)
         // =============================
-        $totalOperasional = JournalEntry::whereHas('account', function($q){
+        $operasionalQuery = JournalEntry::whereHas('account', function($q) {
                 $q->where('code', 'like', '6%');
             })
-            ->whereHas('journal', fn($q) => $q->whereBetween('date', [$start, $end]))
-            ->sum('debit');
+            ->whereHas('journal', fn($q) => $q->whereBetween('date', [$start, $end]));
+
+        $totalOperasional = $getSaldo($operasionalQuery);
 
         // =============================
         //   PENDAPATAN NON-OP (7xxx)
         // =============================
-        $pendNonOp = JournalEntry::whereHas('account', function($q){
+        $nonOpPendQuery = JournalEntry::whereHas('account', function($q) {
                 $q->where('code', 'like', '7%');
             })
-            ->whereHas('journal', fn($q) => $q->whereBetween('date', [$start, $end]))
-            ->sum('credit');
+            ->whereHas('journal', fn($q) => $q->whereBetween('date', [$start, $end]));
+
+        $pendNonOp = $getSaldo($nonOpPendQuery);
 
         // =============================
         //   BEBAN NON-OP (8xxx)
         // =============================
-        $bebanNonOp = JournalEntry::whereHas('account', function($q){
+        $nonOpBebanQuery = JournalEntry::whereHas('account', function($q) {
                 $q->where('code', 'like', '8%');
             })
-            ->whereHas('journal', fn($q) => $q->whereBetween('date', [$start, $end]))
-            ->sum('debit');
+            ->whereHas('journal', fn($q) => $q->whereBetween('date', [$start, $end]));
+
+        $bebanNonOp = $getSaldo($nonOpBebanQuery);
 
         // =============================
         //         LABA BERSIH
@@ -81,5 +97,4 @@ class LabaRugiController extends Controller
             'labaBersih'
         ));
     }
-
 }

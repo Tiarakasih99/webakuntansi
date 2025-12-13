@@ -3,59 +3,56 @@
 @include('layouts.head')
 
 <style>
-    /* === FIX NAVBAR === */
-    .navbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 1000;
+    * {
+        font-family: 'Poppins', sans-serif;
     }
 
-    /* === FIX SIDEBAR === */
+    .navbar {
+        position: relative;
+        margin-left: 245px;
+        top: 10px;
+        margin-right: 10px;
+    }
+
     .sidebar {
         position: fixed;
-        top: 56px; /* tinggi navbar */
-        left: 0;
-        width: 250px; /* sesuaikan dengan sidebar */
-        height: calc(100vh - 56px);
-        overflow-y: auto;
-        background-color: #fff; /* atau tema sidebar kamu */
-        border-right: 1px solid #ddd;
-        z-index: 999;
+        top: 0;
+        left: 25px;
+        width: 250px;
+        z-index: 90;
     }
 
-    /* === KONTEN UTAMA === */
     main {
-        margin-top: 56px;   /* biar tidak ketutup navbar */
-        margin-left: 250px; /* biar tidak ketutup sidebar */
+        margin-top: 35px;
+        margin-left: 260px;
+        margin-right: 25px;
+        margin-bottom: 25px;
         padding: 30px;
         flex-grow: 1;
-        background: #f8f9fa; /* warna background dashboard */
-        min-height: calc(100vh - 56px);
+        min-height: calc(100vh - 55px);
+        border-radius: 25px;
+    
+        /* Glassmorphism */
+        background: rgba(255, 255, 255, 0.15); /* semi-transparent */
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
-    footer{
-        margin-left:250px;
+    .modal-open main {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
     }
 </style>
 
-<body class="d-flex flex-column min-vh-100">
-
+<body class="d-flex flex-column min-vh-100" style="background: url('/img/background.jpg'); background-size: cover; background-attachment: fixed;">
     @include('layouts.navbar')
-
     <div class="d-flex">
-
-        <!-- SIDEBAR -->
         @include('layouts.sidebar')
-
-        <!-- KONTEN -->
         <main>
             @yield('content')
         </main>
-
     </div>
-
     @include('layouts.footer')
     @yield('scripts')
 </body>

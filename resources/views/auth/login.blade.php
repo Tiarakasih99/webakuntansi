@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Modern Login</title>
+<title>Admin Login</title>
 
 <style>
     * {
@@ -22,10 +22,9 @@
     .background {
         width: 100%;
         height: 100%;
-        background-image:
-            linear-gradient(to bottom right, rgba(157,178,220,0.7), rgba(14,45,108,0.8)),
-            url("https://images.unsplash.com/photo-1521791136064-7986c2920216");
+        background-image: url('/img/log_in.png');
         background-size: cover;
+        background-repeat: no-repeat;
         background-position: center;
         display: flex;
         justify-content: flex-end;
@@ -34,14 +33,21 @@
     }
 
     .login-box {
-        width: 360px;
+        width: 375px;
         padding: 40px 35px;
         border-radius: 22px;
-        background: rgba(255, 255, 255, 0.12);
-        backdrop-filter: blur(18px);
-        border: 1px solid rgba(255,255,255,0.2);
-        box-shadow: 0 0 30px rgba(0,0,0,0.45);
-        animation: fadeIn 0.8s ease forwards;
+
+        background: rgba(255, 255, 255, 0.10);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+    
+        border: 1px solid rgba(255, 255, 255, 0.30);
+    
+        box-shadow:
+            0 8px 25px rgba(0, 0, 0, 0.18),
+            0 2px 8px rgba(255, 255, 255, 0.3) inset;
+    
+        animation: fadeIn 0.8s ease forwards;s
         transform: translateY(20px);
         opacity: 0;
     }
@@ -57,24 +63,25 @@
         width: 80px;
         height: 80px;
         margin: 0 auto 20px;
-        border-radius: 22px;
-        background: rgba(255,255,255,0.15);
-        backdrop-filter: blur(12px);
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.40);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22), 0 0 18px rgba(255, 255, 255, 0.25) inset;
         display: flex;
         justify-content: center;
         align-items: center;
         position: relative;
         overflow: hidden;
-        border: 1px solid rgba(255,255,255,0.35);
-        box-shadow: 0 10px 28px rgba(0,0,0,0.25);
     }
-
+    
     .glass-icon::after {
         content: "";
         position: absolute;
         inset: 0;
-        background: linear-gradient(135deg, #9db2dc 0%, #0e2d6c 100%);
-        opacity: 0.4;
+        background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.05));
+        opacity: 0.5;
     }
 
     .glass-icon i {
@@ -119,6 +126,15 @@
         transform: translateY(-50%);
         color: white;
     }
+    
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        -webkit-text-fill-color: white !important;
+        transition: background-color 5000s ease-in-out 0s;
+        box-shadow: 0 0 0 1000px rgba(255,255,255,0.15) inset !important;
+    }
 
     .remember-forgot {
         display: flex;
@@ -128,9 +144,15 @@
         margin-bottom: 20px;
     }
 
-    .remember-forgot a {
-        color: #cfe0ff;
-        text-decoration: none;
+    .remember-forgot label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .remember-forgot input[type="checkbox"] {
+        transform: scale(0.9);
+        accent-color: white;
     }
 
     .login-btn {
@@ -139,11 +161,12 @@
         border: none;
         border-radius: 12px;
         font-size: 16px;
-        background: linear-gradient(120deg, #9db2dc, #0e2d6c, #9db2dc);
+        background: linear-gradient(120deg, #f7faffff);
         background-size: 200% 200%;
         color: white;
         cursor: pointer;
         font-weight: 600;
+        color: #594D9B;
         transition: 0.4s ease-in-out;
     }
 
@@ -168,7 +191,7 @@
             <i class="fa-solid fa-right-to-bracket"></i>
         </div>
 
-        <div class="login-title">Login</div>
+        <div class="login-title">Welcome, Admin</div>
 
         @if ($errors->any())
             <div style="color: #ffdede; margin-bottom:10px; text-align:center;">

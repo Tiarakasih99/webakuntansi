@@ -7,40 +7,34 @@
         padding: 40px;
         border-radius: 10px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        max-width: 900px;
+        max-width: 850px;
         margin: auto;
         font-family: "Times New Roman", serif;
-        color: #000;
     }
 
-    .title-red {
-        color: #b30000;
+    .report-title {
+        color: #570f8fff;
+        text-align: center;
         font-size: 22px;
         font-weight: bold;
-        text-align: center;
-        margin-bottom: 4px;
+        margin-bottom: 5px;
+        text-transform: uppercase;
     }
 
-    .subtitle {
+    .report-subtitle {
         text-align: center;
         font-size: 15px;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
     }
 
-    .period {
-        text-align: right;
-        font-size: 14px;
-        margin-bottom: 10px;
-    }
-
-    table.report-table {
+    .report-table {
         width: 100%;
         font-size: 15px;
         border-collapse: collapse;
     }
 
     .report-table td {
-        padding: 4px 0;
+        padding: 7px 0;
     }
 
     .indent {
@@ -71,12 +65,11 @@
         <button class="btn btn-danger">Export PDF</button>
     </form>
 
-    <div class="title-red">Laba/Rugi (Standar)</div>
-    <div class="subtitle">
-        Dari {{ $start }} s/d {{ $end }}
+    <div class="report-title">Adésté & Co.</div>
+    <div class="report-title">Laporan Laba/Rugi (Standar)</div>
+    <div class="report-subtitle">
+        Periode: {{ $start }} s/d {{ $end }}
     </div>
-
-    <div class="period"><strong>Periode:</strong> {{ $start }} - {{ $end }}</div>
 
     <table class="report-table">
 
